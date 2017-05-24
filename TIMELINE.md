@@ -2,7 +2,8 @@ Timeline
 ========
 
 * Week 1 - Week 2: Experiment with the existing mix-net implementation on Zeus.
-  See how the mix-net works and study related papers
+  See how the mix-net works and study related papers. Work on the
+  implementation of a Common Reference String.
 
 * Week 3 - Week 4: Identify which of the existing mix-net publications are fit
   to be implemented. Examine all possible candidates and after some discussion

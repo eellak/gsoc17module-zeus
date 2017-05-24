@@ -1,9 +1,15 @@
 Implementation of a New Re-encryption Mix-net for Zeus
 ======================================================
 
-As mentioned in various papers and deliverables the mix-net used in Zeus is not
-sufficient. This module will replace the current mix-net implementation in
-favor of a faster one.
+The mix-net used in [Zeus](https://github.com/grnet/zeus) is not sufficient.
+This module aims to replace the current mix-net implementation in favor of a faster one.
+
+Apart from e-voting, the mix-net can be used for other tasks such as surveys
+and collection of data from various IoT devices.
+
+This mix-net implementation will be based on the existing
+[prototype](https://github.com/grnet/ac16)
+of a re-encryption mix-net proposed by Fauzi et al.
 
 
 Deliverables
