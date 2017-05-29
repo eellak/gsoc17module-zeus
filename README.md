@@ -12,6 +12,23 @@ This mix-net implementation will be based on the existing
 of a re-encryption mix-net proposed by Fauzi et al.
 
 
+Organization
+============
+
+This [project](https://summerofcode.withgoogle.com/projects/#6269134514946048) is being developed as part of the [Google Summer of
+Code](https://summerofcode.withgoogle.com) program.
+
+Student: Vitalis Salis
+
+Mentors:
+
+- Dimitris Mitropoulos
+- Georgios Tsoukalas
+- Panos Louridas
+
+Organization: [Open Technologies Alliance - GFOSS](https://gfoss.eu/)
+
+
 Deliverables
 ============
 
