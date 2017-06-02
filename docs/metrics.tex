@@ -1,9 +1,13 @@
 \documentclass{article}
+
 \usepackage{url}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{todonotes}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+
+\presetkeys{todonotes}{fancyline, color=yellow!30}{}
 
 \date{}
 \begin{document}
@@ -14,25 +18,33 @@
 
 \maketitle
 \begin{abstract}
-	We have computed some metrics for the prototype implementation \cite{prototype} of a mixnet based
-    on the shuffle argument proposed by Fauzi et al \cite{shufflearg}. The goal of these metrics
-    is to identify aspects of the code that are slow and find suitable replacements
-    for them.
+  We have computed some metrics for the prototype implementation
+  \cite{prototype} of a mixnet based on the shuffle argument proposed
+  by Fauzi et al \cite{shufflearg}. The goal of these metrics is to
+  identify aspects of the code that are slow and find suitable
+  replacements for them.
 \end{abstract}
 
 \section{Introduction}
 
-The prototype implementation of the mixnet proposed by Fauzi et al, produces multiple
-implementation difficulties. On implementations of cryptographic protocols it is typical
-to use C for your cryptographic computation. Yet the prototype is implemented using python,
-so it has to switch between python and C for its computations. This is the real bottleneck
-of the prototype and the reason some operations are slower than they should.
+The prototype implementation of the mixnet proposed by Fauzi et al,
+produces multiple implementation difficulties. On implementations of
+cryptographic protocols it is typical to use C for your cryptographic
+computation. Yet the prototype is implemented using python, so it has
+to switch between python and C for its computations. This may be a
+bottleneck of the prototype and the reason some operations are slower
+than they should. Another reason may be that the underlying C
+cryptographic operations themselves are not efficient, and a different
+C implementation might improve matters. The two reasons are not
+exclusive, and one might compound the other. We start by investigating
+the first. 
 
 \section{Metrics}
 
-We have compiled a list of metrics for the various operations of the prototype. As you see
-most of the time is taken by the prover and the verifier, as expected, because these have
-the most operations that produce a context switch between Python and C.
+We have compiled a list of metrics for the various operations of the
+prototype. Most of the time is taken by the prover and the verifier,
+as expected, because these have the most operations that produce a
+context switch between Python and C.
 
 \begin{table}
 \begin{tabular}{ |p{3cm}|p{5cm}|p{3cm}|  }
@@ -52,15 +64,23 @@ the most operations that produce a context switch between Python and C.
 \caption{Metrics}
 \end{table}
 
-The time taken by each of these operations is linear, meaning that for 200 votes
-you just double the numbers on the above table.
+The time taken by each of these operations is linear, meaning that for
+200 ciphertexts you just double the numbers on the above table.
 
 \section{Solutions}
 
-Since the real bottleneck are the context switches, the most obvious solutions is to
-limit them. The prover and the verifier that take the most time, also have the most
-loops that do a context switch for each voter. We can avoid that by using universal functions
-provided by numpy\cite{numpy} to do vectorized operations.
+Since the real bottleneck are the context switches, the most obvious
+solutions is to limit them. 
+\todo[inline]{PL: In fact this is still to be shown; we do not really
+  know yet that the context switches take most of the time. We know
+  that the C crypto operations take most of the time. But do they take
+  more time than the same operations executed as part of a
+  \emph{single} context switch?}
+
+The prover and the verifier that take the most time, also have the
+most loops that do a context switch for each voter. We can avoid that
+by using universal functions provided by numpy\cite{numpy} to do
+vectorized operations.
 
 
 \bibliographystyle{plain}
