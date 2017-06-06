@@ -41,9 +41,9 @@ the first.
 
 \section{Metrics}
 
-We have compiled a list of metrics for the various operations of the
+Table 1 contains a list of metrics for the various operations of the
 prototype. Most of the time is taken by the prover and the verifier,
-as expected, because these have the most operations that produce a
+as expected, because these have the most computations that produce a
 context switch between Python and C.
 
 \begin{table}
@@ -65,7 +65,38 @@ context switch between Python and C.
 \end{table}
 
 The time taken by each of these operations is linear, meaning that for
-200 ciphertexts you just double the numbers on the above table.
+200 ciphertexts you just double the numbers on the table.
+
+\section{Context Switches}
+
+A context switch happens when a python program communicates with a C
+program for various cryptographic computations. The reasoning behind
+believing that a context switch may be the bottleneck of the application
+is that python needs to create a PyObject containing the
+data it wants to communicate, and C also needs to create a PyObject to
+return the result of the computations.
+
+The prover has various steps. In order to validate our theory about context
+switches we measured each of these steps. Two of those steps, while having
+the same numberof iterations, had a significant time difference
+(100ms compared to 700ms).
+
+First we attributed the time difference to various calls to zip and to tuple
+creation. After removing all the calls to zip we didn't notice any significant
+difference. This seemed to validate the context switches theory, because the
+slower step contained more context switches per iteration.
+
+But that's not the case. Using cProfile we identified the main
+reason behind this difference. The slower step does more multiplications on
+elliptic curve elements. While it is expected that multiplication will be slower
+than addition, the difference was enough to dismiss the context switches theory.
+
+Multiplication on our elliptic curve elements takes 575ms per 300
+multiplications, while addition takes 5ms for 400 additions. If the real
+problem were context switches, then the addition wouldn't have such a huge
+difference with the multiplication, because it has more operations hence
+more context switches.
+
 
 \section{Solutions}
 
