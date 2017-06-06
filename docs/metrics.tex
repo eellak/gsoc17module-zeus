@@ -7,6 +7,8 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 
+\usepackage{minted}
+
 \presetkeys{todonotes}{fancyline, color=yellow!30}{}
 
 \date{}
@@ -76,11 +78,35 @@ is that python needs to create a PyObject containing the
 data it wants to communicate, and C also needs to create a PyObject to
 return the result of the computations.
 
-The prover has various steps. In order to validate our theory about context
-switches we measured each of these steps. Two of those steps, while having
-the same numberof iterations, had a significant time difference
-(100ms compared to 700ms).
+The prover has various steps. In order to validate our theory about
+context switches we measured each of these steps. Two of those steps,
+while having the same number of iterations, had a significant time
+difference. In particular, \mintinline{python}{step2a} below took
+100ms, while \mintinline{python}{step3a} took 700ms.
 
+\begin{minted}[breaklines]{python}
+def step2a(sigma, A1, randoms, g1_poly_zero, g1rho, g1_poly_squares):
+    pi_1sp = []
+    inverted_sigma = inverse_perm(sigma)
+    for inv_i, ri, Ai1 in zip(inverted_sigma, randoms, A1):
+        g1i_poly_sq = g1_poly_squares[inv_i]
+        v = (2 * ri) * (Ai1 + g1_poly_zero) - (ri * ri) * g1rho + g1i_poly_sq
+        pi_1sp.append(v)
+    return pi_1sp
+  \end{minted}
+
+\begin{minted}[breaklines]{python}
+def step3a(sigma, ciphertexts, s_randoms, pk1, pk2):
+    v1s_prime = []
+    v2s_prime = []
+    for perm_i, s_random in zip(sigma, s_randoms):
+        (v1, v2) = ciphertexts[perm_i]
+        v1s_prime.append(tuple_add(v1, enc(pk1, s_random[0], s_random[1], 0)))
+        v2s_prime.append(tuple_add(v2, enc(pk2, s_random[0], s_random[1], 0)))
+    return list(zip(v1s_prime, v2s_prime))
+\end{minted}
+  
+\noindent
 First we attributed the time difference to various calls to zip and to tuple
 creation. After removing all the calls to zip we didn't notice any significant
 difference. This seemed to validate the context switches theory, because the
@@ -102,11 +128,6 @@ more context switches.
 
 Since the real bottleneck are the context switches, the most obvious
 solutions is to limit them. 
-\todo[inline]{PL: In fact this is still to be shown; we do not really
-  know yet that the context switches take most of the time. We know
-  that the C crypto operations take most of the time. But do they take
-  more time than the same operations executed as part of a
-  \emph{single} context switch?}
 
 The prover and the verifier that take the most time, also have the
 most loops that do a context switch for each voter. We can avoid that
