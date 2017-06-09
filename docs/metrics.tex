@@ -124,6 +124,35 @@ difference with the multiplication, because it has more operations hence
 more context switches.
 
 
+\section{Comparing bplib and libsnark}
+
+The prototype implementation uses the bplib\cite{bplib} python module.
+bplib implements bilinear pairings on elliptic curves while also supporting
+elliptic curve operations using the openssl library.
+
+Another implementation supporting elliptic curve computations and bilinear
+pairings is libsnark\cite{libsnark}.
+
+The common characteristics of these libraries are that they both use the
+Ate Pairing and they use windowed exponentiation for
+optimization purposes.
+
+A key difference of these implementations is that bplib uses the
+curve Fp254BNb, while libsnark uses bn128 which is a patch on the
+Fp254BNb curve. Also, libsnark supports vectorized exponentiation
+which boosts up its performance.
+
+In order to compare these two libraries and validate our theory that
+libsnark is faster than bplib, we created two different tests
+using bplib and libsnark on each one. The tests did multiplications
+(the bottleneck of the prototype) on both elliptic curve groups.
+
+The results validated our theory. Multiplying elements on the G2
+group using libsnark yielded a performance of 0.38s/1000 ciphertexts
+while using libsnark yielded 3.22s/1000. On G1 libsnark produced
+0.13s/1000 while bplib produced 0.96s/1000 ciphertexts.
+
+
 \section{Solutions}
 
 Since the real bottleneck are the context switches, the most obvious
