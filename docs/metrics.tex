@@ -155,13 +155,14 @@ while using libsnark yielded 3.22s/1000. On G1 libsnark produced
 
 \section{Solutions}
 
-Since the real bottleneck are the context switches, the most obvious
-solutions is to limit them. 
+Since the real bottleneck are the multiplications on G2 elements,
+the most obvious solution is to use optimizations on the multiplication
+process.
 
-The prover and the verifier that take the most time, also have the
-most loops that do a context switch for each voter. We can avoid that
-by using universal functions provided by numpy\cite{numpy} to do
-vectorized operations.
+As mentioned, libsnark computes multiplications faster than
+our current implementation. Yet libsnark is written in C++
+and we want to use a python module. A python wrapper for
+libsnark would be useful, for our needs and the open source community.
 
 
 \bibliographystyle{plain}
