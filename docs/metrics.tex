@@ -32,14 +32,13 @@
 The prototype implementation of the mixnet proposed by Fauzi et al,
 produces multiple implementation difficulties. On implementations of
 cryptographic protocols it is typical to use C for your cryptographic
-computation. Yet the prototype is implemented using Python, so it has
-to switch between Python and C for its computations. This may be a
+computations. Yet the prototype is implemented using Python, so it has
+to switch between Python and C for its operations. This may be a
 bottleneck of the prototype and the reason some operations are slower
 than they should. Another reason may be that the underlying C
 cryptographic operations themselves are not efficient, and a different
 C implementation might improve matters. The two reasons are not
-exclusive, and one might compound the other. We start by investigating
-the first. 
+exclusive, and one might compound the other.
 
 \section{Metrics}
 
@@ -67,7 +66,7 @@ context switch between Python and C.
 \end{table}
 
 The time taken by each of these operations is linear, meaning that for
-200 ciphertexts you just double the numbers on the table.
+200 ciphertexts the numbers on the table are doubled.
 
 \section{Context Switches}
 
@@ -149,8 +148,26 @@ using bplib and libsnark on each one. The tests did multiplications
 
 The results validated our theory. Multiplying elements on the G2
 group using libsnark yielded a performance of 0.38s/1000 ciphertexts
-while using libsnark yielded 3.22s/1000. On G1 libsnark produced
-0.13s/1000 while bplib produced 0.96s/1000 ciphertexts.
+while using openssl yielded 3.22s/1000. On G1 libsnark produced
+0.13s/1000 while bplib produced 0.96s/1000 multiplications.
+
+
+\section{Wrapping libsnark with Cython}
+
+Since libsnark computes multiplications faster than the openssl
+implementation, the most obvious solution is to replace openssl
+with libsnark. The best candidate for this job is Cython, because
+it offers the performance aspects of C, while providing the functionality
+of Python. In order to validate that Cython, indeed will yield better
+performance we created a basic Cython application that does multiplications
+on the G2 group of the libsnark elliptic curve.
+
+The results were positive. A multiplication on the G2 group using Cython
+takes about 0.5ms while on our prototype implementation, that uses bplib,
+a multiplication takes about 2ms. So that's a 4x boost in performance.
+
+Also our Cython implementation didn't implement vectorized multiplications,
+so there's still room for optimizations.
 
 
 \section{Solutions}
