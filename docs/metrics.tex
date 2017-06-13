@@ -70,10 +70,10 @@ The time taken by each of these operations is linear, meaning that for
 
 \section{Context Switches}
 
-A context switch happens when a python program communicates with a C
+A context switch happens when a Python program communicates with a C
 program for various cryptographic computations. The reasoning behind
 believing that a context switch may be the bottleneck of the application
-is that python needs to create a PyObject containing the
+is that Python needs to create a PyObject containing the
 data it wants to communicate, and C also needs to create a PyObject to
 return the result of the computations.
 
@@ -125,7 +125,7 @@ more context switches.
 
 \section{Comparing bplib and libsnark}
 
-The prototype implementation uses the bplib\cite{bplib} python module.
+The prototype implementation uses the bplib\cite{bplib} Python module.
 bplib implements bilinear pairings on elliptic curves while also supporting
 elliptic curve operations using the openssl library.
 
@@ -176,10 +176,13 @@ Since the real bottleneck are the multiplications on G2 elements,
 the most obvious solution is to use optimizations on the multiplication
 process.
 
-As mentioned, libsnark computes multiplications faster than
-our current implementation. Yet libsnark is written in C++
-and we want to use a python module. A python wrapper for
-libsnark would be useful, for our needs and the open source community.
+As mentioned, libsnark computes multiplications faster than our
+current implementation. Yet libsnark is written in C++ and we want to
+use a Python module. A Python wrapper for libsnark would be useful,
+for our needs and the open source community. In fact, we do not really
+need the full libsnark library; the Elliptic curve parts have been
+factored out to libff~\cite{libff}, so a Python wrapper for libff
+could be implemented. 
 
 
 \bibliographystyle{plain}
