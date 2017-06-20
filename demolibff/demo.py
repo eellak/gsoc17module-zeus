@@ -1,6 +1,7 @@
-from g2_wrapper_py import mul
+from g2_wrapper_py import demoG1, demoG2
 import sys
 
 n = int(sys.argv[1])
 
-print mul(n)
+demoG2(n)
+demoG1(n)
