@@ -62,6 +62,16 @@ G1Elem *G1Elem::add(G1Elem *other) {
     return elem_res;
 }
 
+GTElem::GTElem() {}
+
+GTElem::GTElem(GT<curve> el) {
+    elem = el;
+}
+
+GT<curve> GTElem::get_elem() {
+    return elem;
+}
+
 BigNum::BigNum() {
     elem = Fr<curve>::one();
 }

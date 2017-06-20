@@ -42,6 +42,16 @@ class G1Elem {
         window_table<G1<curve>> g1_table;
 };
 
+class GTElem {
+    public:
+        GTElem();
+        GTElem(GT<curve> el);
+
+        GT<curve> get_elem();
+    private:
+        GT<curve> elem;
+};
+
 class BigNum {
     public:
         BigNum();
