@@ -65,7 +65,7 @@ cdef class LibffPy:
     def gen2(self):
         return self.g2
 
-    def pair(self):
+    def pair(self, G1Py g1, G2Py g2):
         gt = GTPy()
-        gt.pair(self.g1, self.g2)
+        gt.pair(g1, g2)
         return gt
