@@ -9,7 +9,6 @@ G2Elem::G2Elem(G2<curve> el) {
 }
 
 void G2Elem::init(int n) {
-    curve::init_public_params();
     g2_exp_count = n + 6;
     g2_window_size = get_exp_window_size<G2<curve>>(g2_exp_count);
     g2_table = get_window_table(Fr<curve>::size_in_bits(), g2_window_size, elem);
@@ -40,7 +39,6 @@ G1Elem::G1Elem(G1<curve> el) {
 }
 
 void G1Elem::init(int n) {
-    curve::init_public_params();
     g1_exp_count = 4 * n + 7;
     g1_window_size = get_exp_window_size<G1<curve>>(g1_exp_count);
     g1_table = get_window_table(Fr<curve>::size_in_bits(), g1_window_size, elem);
@@ -70,6 +68,11 @@ GTElem::GTElem(GT<curve> el) {
 
 GT<curve> GTElem::get_elem() {
     return elem;
+}
+
+GTElem *GTElem::pair(G1Elem g1, G2Elem g2) {
+    GTElem *gt = new GTElem(curve::reduced_pairing(g1.get_elem(), g2.get_elem()));
+    return gt;
 }
 
 BigNum::BigNum() {

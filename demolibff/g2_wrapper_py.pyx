@@ -1,54 +1,71 @@
 import datetime
 cimport g2_wrapper_py
 
-def demoG2(int n):
-    cdef G2Elem *g2 = new G2Elem(), *other = new G2Elem(), *res
-    cdef BigNum* bg = new BigNum()
+cdef class G1Py:
+    cdef G1Elem *_thisptr
 
-    g2[0].init(n)
+    def __cinit__(self, int n):
+        self._thisptr = new G1Elem()
+        self._thisptr[0].init(n)
 
-    cdef Fr[curve] elem = bg[0].get_elem()
+    def __dealloc__(self):
+        if self._thisptr != NULL:
+            del self._thisptr
 
-    start = datetime.datetime.now()
+    cdef G1Elem getElem(self):
+        return self._thisptr[0]
 
-    for i in range(n):
-        res = g2[0].mul(elem)
+cdef class G2Py:
+    cdef G2Elem *_thisptr
 
-    end = datetime.datetime.now()
+    def __cinit__(self, int n):
+        self._thisptr = new G2Elem()
+        self._thisptr[0].init(n)
 
-    print ("multiplication - G2: %s" % (end - start))
+    def __dealloc__(self):
+        if self._thisptr != NULL:
+            del self._thisptr
 
-    start = datetime.datetime.now()
+    cdef G2Elem getElem(self):
+        return self._thisptr[0]
 
-    for i in range(n):
-        res = g2[0].add(other)
 
-    end = datetime.datetime.now()
+cdef class GTPy:
+    cdef GTElem *_thisptr
 
-    print ("addition - G2: %s" % (end - start))
+    def __cinit__(self):
+        self._thisptr = new GTElem()
 
-def demoG1(int n):
-    cdef G1Elem *g1 = new G1Elem(), *other = new G1Elem(), *res
-    cdef BigNum* bg = new BigNum()
+    def __dealloc__(self):
+        if self._thisptr != NULL:
+            del self._thisptr
 
-    g1[0].init(n)
+    def pair(self, G1Py g1, G2Py g2):
+        cdef G1Elem g1_elem = g1.getElem()
+        cdef G2Elem g2_elem = g2.getElem()
 
-    cdef Fr[curve] elem = bg[0].get_elem()
+        cdef GTElem *newptr;
 
-    start = datetime.datetime.now()
+        newptr = self._thisptr[0].pair(g1_elem, g2_elem)
+        self._thisptr = newptr
 
-    for i in range(n):
-        res = g1[0].mul(elem)
 
-    end = datetime.datetime.now()
+cdef class LibffPy:
+    cdef G1Py g1
+    cdef G2Py g2
 
-    print ("multiplication - G1: %s" % (end - start))
+    def __init__(self, int n):
+        init_public_params()
+        self.g1 = G1Py(n)
+        self.g2 = G2Py(n)
 
-    start = datetime.datetime.now()
+    def gen1(self):
+        return self.g1
 
-    for i in range(n):
-        res = g1[0].add(other)
+    def gen2(self):
+        return self.g2
 
-    end = datetime.datetime.now()
-
-    print ("addition - G1: %s" % (end - start))
+    def pair(self):
+        gt = GTPy()
+        gt.pair(self.g1, self.g2)
+        return gt
