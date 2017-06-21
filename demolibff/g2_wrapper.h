@@ -48,6 +48,7 @@ class GTElem {
         GTElem(GT<curve> el);
 
         GT<curve> get_elem();
+        GTElem *pair(G1Elem g1, G2Elem g2);
     private:
         GT<curve> elem;
 };

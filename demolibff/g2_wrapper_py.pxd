@@ -4,6 +4,8 @@ cdef extern from "g2_wrapper.h":
     cdef cppclass curve:
         pass
 
+    cdef void init_public_params "curve::init_public_params"()
+
     cdef cppclass Fr[curve]:
         pass
 
@@ -39,6 +41,7 @@ cdef extern from "g2_wrapper.h":
         GTElem(GT[curve] *el) except +
 
         GT[curve] get_elem() except +
+        GTElem *pair(G1Elem g1, G2Elem g2) except +
 
     cdef cppclass BigNum:
         BigNum() except +
