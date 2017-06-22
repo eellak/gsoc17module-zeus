@@ -8,60 +8,13 @@
 using namespace libff;
 
 typedef bn128_pp curve;
-typedef bn128_G2 curveG2;
 
-class BigNum {
-    public:
-        BigNum();
-        BigNum(Fr<curve> el);
-        static BigNum *get_order();
-        BigNum *add(BigNum *other);
-        BigNum *sub(BigNum *other);
-        Fr<curve> get_elem();
-    private:
-        Fr<curve> elem;
-};
+size_t get_g2_exp_window_size(size_t g2_exp_count);
+window_table<G2<curve>> get_g2_window_table(size_t window_size, G2<curve> elem);
+G2<curve> g2_mul(size_t window_size, window_table<G2<curve>> g2_table, Fr<curve> other);
 
-class G2Elem {
-    public:
-        G2Elem();
-        G2Elem(G2<curve> el);
+size_t get_g1_exp_window_size(size_t g1_exp_count);
+window_table<G1<curve>> get_g1_window_table(size_t window_size, G1<curve> elem);
+G1<curve> g1_mul(size_t window_size, window_table<G1<curve>> g1_table, Fr<curve> other);
 
-        void init(int n);
-        G2Elem *mul(BigNum *s);
-        G2Elem *add(G2Elem *other);
-        bool eq(G2Elem *other);
-        G2<curve> get_elem();
-    private:
-        G2<curve> elem;
-        size_t g2_exp_count;
-        size_t g2_window_size;
-        window_table<G2<curve>> g2_table;
-};
-
-class G1Elem {
-    public:
-        G1Elem();
-        G1Elem(G1<curve> el);
-
-        void init(int n);
-        G1Elem *mul(BigNum *s);
-        G1Elem *add(G1Elem *other);
-        G1<curve> get_elem();
-    private:
-        G1<curve> elem;
-        size_t g1_exp_count;
-        size_t g1_window_size;
-        window_table<G1<curve>> g1_table;
-};
-
-class GTElem {
-    public:
-        GTElem();
-        GTElem(GT<curve> el);
-
-        GT<curve> get_elem();
-        GTElem *pair(G1Elem *g1, G2Elem *g2);
-    private:
-        GT<curve> elem;
-};
+Fr<curve> get_order();

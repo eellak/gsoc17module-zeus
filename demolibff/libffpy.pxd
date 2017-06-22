@@ -1,51 +1,45 @@
-#language: c++
 from libcpp cimport bool
 
 cdef extern from "libff_wrapper.h":
     cdef cppclass curve:
         pass
 
+    cdef cppclass window_table[G]:
+        pass
+
     cdef void init_public_params "curve::init_public_params"()
 
     cdef cppclass Fr[curve]:
-        pass
+        Fr() except +
+        Fr(Fr[curve] f) except +
+        Fr[curve] operator+(Fr[curve]) except +
+        Fr[curve] operator-(Fr[curve]) except +
 
     cdef cppclass G2[curve]:
-        pass
+        G2() except +
+        G2(G2[curve] g) except +
+
+        G2[curve] operator+(G2[curve]) except +
+        bool operator==(G2[curve]) except +
 
     cdef cppclass G1[curve]:
-        pass
+        G1() except +
+        G1(G1[curve] g) except +
+
+        G1[curve] operator+(G1[curve]) except +
+        bool operator==(G1[curve]) except +
 
     cdef cppclass GT[curve]:
-        pass
+        GT() except +
+        GT(GT[curve] g) except +
 
-    cdef cppclass BigNum:
-        BigNum() except +
+    cdef size_t get_g2_exp_window_size(size_t g2_exp_count)
+    cdef G2[curve] g2_mul(size_t window_size, window_table[G2[curve]] g2_table, Fr[curve] other)
+    cdef window_table[G2[curve]] get_g2_window_table(size_t window_size, G2[curve] elem)
 
-        BigNum *add(BigNum *other) except +
-        BigNum *sub(BigNum *other) except +
+    cdef size_t get_g1_exp_window_size(size_t g1_exp_count)
+    cdef G1[curve] g1_mul(size_t window_size, window_table[G1[curve]] g1_table, Fr[curve] other)
+    cdef window_table[G1[curve]] get_g1_window_table(size_t window_size, G1[curve] elem)
+    cdef GT[curve] reduced_pairing "curve::reduced_pairing"(G1[curve] g1, G2[curve] g2)
 
-    cdef BigNum *get_order "BigNum::get_order"()
-
-    cdef cppclass G2Elem:
-        G2Elem() except +
-        G2Elem(G2[curve] *el) except +
-
-        void init(int n) except +
-        G2Elem *mul(BigNum *s) except +
-        G2Elem *add(G2Elem *other) except +
-        bool eq(G2Elem *other) except +
-
-    cdef cppclass G1Elem:
-        G1Elem() except +
-        G1Elem(G1[curve] *el) except +
-
-        void init(int n) except +
-        G1Elem *mul(BigNum *s) except +
-        G1Elem *add(G1Elem *other) except +
-
-    cdef cppclass GTElem:
-        GTElem() except +
-        GTElem(GT[curve] *el) except +
-
-        GTElem *pair(G1Elem *g1, G2Elem *g2) except +
+    cdef Fr[curve] get_order "Fr<curve>::one"()

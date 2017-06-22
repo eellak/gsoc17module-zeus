@@ -18,7 +18,7 @@ setup(
             language="c++",
             include_dirs=["/usr/local/include/libff"],
             library_dirs = ["/usr/local/lib"],
-            extra_compile_args = ["-std=c++11", "-fPIC", "-shared", "-w"],
+            extra_compile_args = ["-std=c++11", "-fPIC", "-shared", "-w", "-static"],
             extra_link_args = ["-lgmp", "-lff", "-lsnark", "-lcrypto", "-fopenmp", "-g"]
         )
     ),
