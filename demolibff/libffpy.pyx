@@ -1,4 +1,4 @@
-cimport g2_wrapper_py
+cimport libffpy
 
 cdef class BigNumPy:
     cdef BigNum *_thisptr

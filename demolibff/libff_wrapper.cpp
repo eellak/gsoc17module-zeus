@@ -1,4 +1,4 @@
-#include "g2_wrapper.h"
+#include "libff_wrapper.h"
 
 G2Elem::G2Elem() {
     elem = G2<curve>::one();

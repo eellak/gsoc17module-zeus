@@ -1,7 +1,7 @@
 #language: c++
 from libcpp cimport bool
 
-cdef extern from "g2_wrapper.h":
+cdef extern from "libff_wrapper.h":
     cdef cppclass curve:
         pass
 

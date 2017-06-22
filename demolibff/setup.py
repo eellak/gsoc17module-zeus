@@ -10,11 +10,11 @@ os.environ["CC"] = "g++"
 os.environ["CXX"] = "g++"
 
 setup(
-    name='g2_wrapper_py',
+    name='libffpy',
     ext_modules=cythonize(
         Extension(
-            "g2_wrapper_py",
-            sources=["g2_wrapper_py.pyx", "g2_wrapper.cpp"],
+            "libffpy",
+            sources=["libffpy.pyx", "libff_wrapper.cpp"],
             language="c++",
             include_dirs=["/usr/local/include/libff"],
             library_dirs = ["/usr/local/lib"],
