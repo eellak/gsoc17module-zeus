@@ -46,3 +46,7 @@ cdef extern from "libff_wrapper.h":
     cdef GT[curve] reduced_pairing "curve::reduced_pairing"(G1[curve] g1, G2[curve] g2)
 
     cdef Fr[curve] get_order "Fr<curve>::one"()
+    cdef Fr[curve] Fr_get_random "Fr<curve>::random_element"()
+
+    cdef G1[curve] get_g1_gen "G1<curve>::one"()
+    cdef G2[curve] get_g2_gen "G2<curve>::one"()

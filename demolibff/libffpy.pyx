@@ -5,7 +5,7 @@ cdef class BigNum:
 
     def __cinit__(self, init=True):
         if init:
-            self._thisptr = new Fr[curve]()
+            self._thisptr = new Fr[curve](Fr_get_random())
 
     def __dealloc__(self):
         self.free()
@@ -75,7 +75,7 @@ cdef class G1Py:
 
     def __cinit__(self, init=True):
         if init:
-            self._thisptr = new G1[curve]()
+            self._thisptr = new G1[curve](get_g1_gen())
 
     def __dealloc__(self):
         self.free()
@@ -184,7 +184,7 @@ cdef class G2Py:
 
     def __cinit__(self, init=True):
         if init:
-            self._thisptr = new G2[curve]()
+            self._thisptr = new G2[curve](get_g2_gen())
 
     def __dealloc__(self):
         self.free()
