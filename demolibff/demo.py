@@ -1,6 +1,6 @@
 import sys
 import datetime
-from g2_wrapper_py import LibffPy, BigNumPy
+from libffpy import LibffPy, BigNum
 
 l = LibffPy(10)
 g2 = l.gen2()
@@ -10,9 +10,9 @@ n = int(sys.argv[1])
 
 
 start = datetime.datetime.now()
-bg = [BigNumPy() for _ in xrange(n - 1)]
+bg = [BigNum() for _ in xrange(n - 1)]
 end = datetime.datetime.now()
-print "BigNumPy creation ellapsed: %s" % (end - start)
+print "BigNum creation ellapsed: %s" % (end - start)
 
 
 s = reduce((lambda x,y: x + y), bg)
