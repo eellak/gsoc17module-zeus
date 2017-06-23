@@ -2,11 +2,11 @@ import sys
 import datetime
 from libffpy import LibffPy, BigNum
 
-l = LibffPy(10)
+n = int(sys.argv[1])
+
+l = LibffPy(n)
 g2 = l.gen2()
 g1 = l.gen1()
-
-n = int(sys.argv[1])
 
 
 start = datetime.datetime.now()
