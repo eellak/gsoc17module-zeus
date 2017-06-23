@@ -13,22 +13,24 @@ cdef extern from "libff_wrapper.h":
     cdef cppclass Fr[curve]:
         Fr() except +
         Fr(Fr[curve] f) except +
-        Fr[curve] operator+(Fr[curve]) except +
-        Fr[curve] operator-(Fr[curve]) except +
+        Fr(int n) except +
+
+        Fr[curve] operator+(Fr[curve] other) except +
+        Fr[curve] operator-(Fr[curve] other) except +
 
     cdef cppclass G2[curve]:
         G2() except +
         G2(G2[curve] g) except +
 
-        G2[curve] operator+(G2[curve]) except +
-        bool operator==(G2[curve]) except +
+        G2[curve] operator+(G2[curve] other) except +
+        bool operator==(G2[curve] other) except +
 
     cdef cppclass G1[curve]:
         G1() except +
         G1(G1[curve] g) except +
 
-        G1[curve] operator+(G1[curve]) except +
-        bool operator==(G1[curve]) except +
+        G1[curve] operator+(G1[curve] other) except +
+        bool operator==(G1 other) except +
 
     cdef cppclass GT[curve]:
         GT() except +
