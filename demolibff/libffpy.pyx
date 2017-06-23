@@ -120,18 +120,32 @@ cdef class G1Py:
     def __mul__(x, y):
         cdef G1Py g1
         cdef BigNum bg
+        cdef Fr[curve] *fr
 
         if not (isinstance(x, G1Py) or isinstance(y, G1Py)):
             return NotImplemented
 
         if isinstance(x, G1Py):
-            if not isinstance(y, BigNum):
+            if isinstance(y, BigNum):
+                bg = <BigNum>y
+            elif isinstance(y, int):
+                fr = new Fr[curve](<int>y)
+                bg = BigNum(init=False)
+                bg.setElem(fr)
+            else:
                 return NotImplemented
+
             g1 = <G1Py>x
-            bg = <BigNum>y
         elif isinstance(x, BigNum):
             g1 = <G1Py>y
             bg = <BigNum>x
+        elif isinstance(x, int):
+            g1 = <G1Py>y
+            fr = new Fr[curve](<int>x)
+            bg = BigNum(init=False)
+            bg.setElem(fr)
+        else:
+            return NotImplemented
 
         return g1.mul(bg)
 
@@ -146,10 +160,10 @@ cdef class G1Py:
 
         return left.add(right)
 
-    def __richcmp__(x, y, cmp):
+    def __richcmp__(x, y, int op):
         cdef G1Py left, right
 
-        if cmp != 2:
+        if op != 2:
             # not ==
             return NotImplemented
 
@@ -215,17 +229,31 @@ cdef class G2Py:
     def __mul__(x, y):
         cdef G2Py g2
         cdef BigNum bg
+        cdef Fr[curve] *fr
+
         if not (isinstance(x, G2Py) or isinstance(y, G2Py)):
             return NotImplemented
 
         if isinstance(x, G2Py):
-            if not isinstance(y, BigNum):
+            if isinstance(y, BigNum):
+                bg = <BigNum>y
+            elif isinstance(y, int):
+                fr = new Fr[curve](<int>y)
+                bg = BigNum(init=False)
+                bg.setElem(fr)
+            else:
                 return NotImplemented
             g2 = <G2Py>x
-            bg = <BigNum>y
         elif isinstance(x, BigNum):
             g2 = <G2Py>y
             bg = <BigNum>x
+        elif isinstance(x, int):
+            g2 = <G2Py>y
+            fr = new Fr[curve](<int>x)
+            bg = BigNum(init=False)
+            bg.setElem(fr)
+        else:
+            return NotImplemented
 
         return g2.mul(bg)
 
@@ -240,10 +268,10 @@ cdef class G2Py:
 
         return left.add(right)
 
-    def __richcmp__(x, y, cmp):
+    def __richcmp__(x, y, op):
         cdef G2Py left, right
 
-        if cmp != 2:
+        if op != 2:
             # not ==
             return NotImplemented
 
