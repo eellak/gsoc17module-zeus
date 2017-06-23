@@ -71,7 +71,7 @@ cdef class G1Py:
     cdef G1[curve] *_thisptr
     cdef size_t g1_exp_count
     cdef size_t g1_window_size
-    cdef window_table[G1[curve]] g1_table
+    cdef window_table[G1[curve]] *g1_table
 
     def __cinit__(self, init=True):
         if init:
@@ -79,11 +79,13 @@ cdef class G1Py:
 
     def __dealloc__(self):
         self.free()
+        if self.g1_table != NULL:
+            del self.g1_table
 
     def init(self, int n):
         self.g1_exp_count = 4 * n + 7;
         self.g1_window_size = get_g1_exp_window_size(self.g1_exp_count)
-        self.g1_table = get_g1_window_table(self.g1_window_size, self.getElemRef()[0])
+        self.g1_table = new window_table[G1[curve]](get_g1_window_table(self.g1_window_size, self.getElemRef()[0]))
 
     def free(self):
         if self._thisptr != NULL:
@@ -164,7 +166,7 @@ cdef class G2Py:
     cdef G2[curve] *_thisptr
     cdef size_t g2_exp_count
     cdef size_t g2_window_size
-    cdef window_table[G2[curve]] g2_table
+    cdef window_table[G2[curve]] *g2_table
 
     def __cinit__(self, init=True):
         if init:
@@ -172,11 +174,13 @@ cdef class G2Py:
 
     def __dealloc__(self):
         self.free()
+        if self.g2_table != NULL:
+            del self.g2_table
 
     def init(self, int n):
         self.g2_exp_count = n + 6
         self.g2_window_size = get_g2_exp_window_size(self.g2_exp_count)
-        self.g2_table = get_g2_window_table(self.g2_window_size, self.getElemRef()[0])
+        self.g2_table = new window_table[G2[curve]](get_g2_window_table(self.g2_window_size, self.getElemRef()[0]))
 
     def free(self):
         if self._thisptr != NULL:
