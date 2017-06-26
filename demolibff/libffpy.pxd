@@ -13,10 +13,16 @@ cdef extern from "libff_wrapper.h":
     cdef cppclass Fr[curve]:
         Fr() except +
         Fr(Fr[curve] f) except +
-        Fr(int n) except +
+        Fr(long long n) except +
 
         Fr[curve] operator+(Fr[curve] other) except +
+        Fr[curve] operator+(int other) except +
         Fr[curve] operator-(Fr[curve] other) except +
+        Fr[curve] operator-(int other) except +
+        Fr[curve] operator-() except +
+        Fr[curve] operator^(unsigned long long other) except +
+        bool operator==(Fr[curve] other) except +
+        Fr[curve] invert() except +
 
     cdef cppclass G2[curve]:
         G2() except +
