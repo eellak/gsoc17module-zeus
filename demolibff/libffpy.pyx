@@ -41,30 +41,131 @@ cdef class BigNum:
         newptr = new Fr[curve](self.getElemRef()[0] + other.getElemRef()[0])
         return self.createElem(newptr)
 
+    cpdef BigNum addInt(self, int other):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](self.getElemRef()[0] + other)
+        return self.createElem(newptr)
+
+    cpdef BigNum subInt(self, int other, neg=False):
+        cdef Fr[curve] *newptr
+        if neg:
+            newptr = new Fr[curve](-self.getElemRef()[0] + other)
+        else:
+            newptr = new Fr[curve](self.getElemRef()[0] - other)
+
+        return self.createElem(newptr)
+
     cpdef BigNum sub(self, BigNum other):
         cdef Fr[curve] *newptr
         newptr = new Fr[curve](self.getElemRef()[0] - other.getElemRef()[0])
         return self.createElem(newptr)
 
-    def __add__(x, y):
-        cdef BigNum left, right
+    cpdef eq(self, BigNum other):
+        return self.getElemRef()[0] == other.getElemRef()[0]
 
-        if not (isinstance(x, BigNum) and isinstance(y, BigNum)):
+    cpdef BigNum pow(self, unsigned long long p):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](self.getElemRef()[0] ^ p)
+        return self.createElem(newptr)
+
+    cpdef BigNum mod_inverse(self):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](self.getElemRef()[0].invert())
+        return self.createElem(newptr)
+
+    cpdef BigNum random(self, nonzero=False, nonorder=False):
+        cdef Fr[curve] *newptr
+        if nonzero:
+            newptr = new Fr[curve](Fr_get_random_nonzero())
+        elif nonorder:
+            newptr = new Fr[curve](Fr_get_random_nonorder())
+        else:
+            newptr = new Fr[curve](Fr_get_random())
+        return self.createElem(newptr)
+
+    def __add__(x, y):
+        cdef BigNum bgleft, bgright
+        cdef int intright
+
+        if not (isinstance(x, BigNum) or isinstance(y, BigNum)):
             return NotImplemented
 
-        left = <BigNum>x
-        right = <BigNum>y
-        return left.add(right)
+        if isinstance(x, BigNum):
+            if isinstance(y, BigNum):
+                bgleft = <BigNum>x
+                bgright = <BigNum>y
+                return bgleft.add(bgright)
+            elif isinstance(y, int):
+                bgleft = <BigNum>x
+                intright = <int>y
+                return bgleft.addInt(intright)
+            else:
+                return NotImplemented
+
+        # y is bignum
+        if isinstance(x, int):
+            bgleft = <BigNum>y
+            intright = <int>x
+            return bgleft.addInt(intright)
+
+        return NotImplemented
+
 
     def __sub__(x, y):
+        cdef BigNum bgleft, bgright
+        cdef int intright
+
+        if not (isinstance(x, BigNum) or isinstance(y, BigNum)):
+            return NotImplemented
+
+        if isinstance(x, BigNum):
+            if isinstance(y, BigNum):
+                bgleft = <BigNum>x
+                bgright = <BigNum>y
+                return bgleft.sub(bgright)
+            elif isinstance(y, int):
+                bgleft = <BigNum>x
+                intright = <int>y
+                return bgleft.subInt(intright)
+            else:
+                return NotImplemented
+
+        # y is bignum
+        if isinstance(x, int):
+            bgleft = <BigNum>y
+            intright = <int>x
+            return bgleft.subInt(intright, neg=True)
+
+        return NotImplemented
+
+    def __pow__(x, y, z):
+        cdef BigNum bg
+        cdef long long p
+        if not isinstance(x, BigNum):
+            return NotImplemented
+
+        if not (isinstance(y, int) or isinstance(y, long)):
+            return NotImplemented
+
+        bg = <BigNum>x
+        p = <unsigned long long>y
+
+        return bg.pow(p)
+
+    def __richcmp__(x, y, int op):
         cdef BigNum left, right
+
+        if op != 2:
+            # not ==
+            return NotImplemented
 
         if not (isinstance(x, BigNum) and isinstance(y, BigNum)):
             return NotImplemented
 
         left = <BigNum>x
         right = <BigNum>y
-        return left.sub(right)
+
+        return left.eq(right)
 
 
 cdef class G1Py:
@@ -298,6 +399,28 @@ cdef class GTPy:
         if self._thisptr != NULL:
             del self._thisptr
 
+    def __pow__(x, y, z):
+        cdef GTPy gt
+        cdef BigNum bg
+
+        if not (isinstance(x, GTPy) and isinstance(y, BigNum)):
+            return NotImplemented
+
+        gt = <GTPy>x
+        bg = <BigNum>y
+
+        return gt.pow(bg)
+
+    def __richcmp__(x, y, op):
+        cdef GTPy left, right
+        if op != 2 or not(isinstance(x, GTPy) and isinstance(y, GTPy)):
+            return NotImplemented
+
+        left = <GTPy>x
+        right = <GTPy>y
+
+        return left.eq(right)
+
     cdef GT[curve]* getElemRef(self):
         return self._thisptr
 
@@ -305,10 +428,27 @@ cdef class GTPy:
         self.free()
         self._thisptr = g
 
-    def pair(self, G1Py g1, G2Py g2):
+    cdef GTPy createElem(self, GT[curve] *g):
+        cdef GTPy gt = GTPy(init=False)
+        gt.setElem(g)
+        return gt
+
+    cpdef GTPy pow(self, BigNum bg):
+        cdef GT[curve] *newptr
+        cdef Fr[curve] fr = bg.getElemRef()[0]
+        newptr = new GT[curve](self.getElemRef()[0] ^ fr)
+        return self.createElem(newptr)
+
+    cpdef bool eq(self, GTPy other):
+        return self.getElemRef()[0] == other.getElemRef()[0]
+
+    @staticmethod
+    def pair(G1Py g1, G2Py g2):
+        cdef GTPy gt = GTPy(init=False)
         cdef GT[curve] *newptr;
         newptr = new GT[curve](reduced_pairing(g1.getElemRef()[0], g2.getElemRef()[0]))
-        self.setElem(newptr)
+        gt.setElem(newptr)
+        return gt
 
 
 cdef class LibffPy:
@@ -333,6 +473,5 @@ cdef class LibffPy:
         return self.g2
 
     def pair(self, G1Py g1, G2Py g2):
-        gt = GTPy(init=False)
-        gt.pair(g1, g2)
+        gt = GTPy.pair(g1, g2)
         return gt

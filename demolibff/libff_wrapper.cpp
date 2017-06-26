@@ -24,10 +24,18 @@ G1<curve> g1_mul(size_t window_size, window_table<G1<curve>> *g1_table, Fr<curve
     return windowed_exp(Fr<curve>::size_in_bits(), window_size, *g1_table, other);
 }
 
-GT<curve> pair(G1<curve> g1, G2<curve> g2) {
-    return curve::reduced_pairing(g1, g2);
+Fr<curve> Fr_get_random_nonzero() {
+    Fr<curve> elem = Fr<curve>::random_element();
+    while (elem == Fr<curve>::zero()) {
+        elem = Fr<curve>::random_element();
+    }
+    return elem;
 }
 
-Fr<curve> get_order() {
-    return Fr<curve>::one();
+Fr<curve> Fr_get_random_nonorder() {
+    Fr<curve> elem = Fr<curve>::random_element();
+    while (elem == Fr<curve>::zero() && elem != Fr<curve>::one()) {
+        elem = Fr<curve>::random_element();
+    }
+    return elem;
 }

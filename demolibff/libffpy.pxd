@@ -13,10 +13,16 @@ cdef extern from "libff_wrapper.h":
     cdef cppclass Fr[curve]:
         Fr() except +
         Fr(Fr[curve] f) except +
-        Fr(int n) except +
+        Fr(long long n) except +
 
         Fr[curve] operator+(Fr[curve] other) except +
+        Fr[curve] operator+(int other) except +
         Fr[curve] operator-(Fr[curve] other) except +
+        Fr[curve] operator-(int other) except +
+        Fr[curve] operator-() except +
+        Fr[curve] operator^(unsigned long long other) except +
+        bool operator==(Fr[curve] other) except +
+        Fr[curve] invert() except +
 
     cdef cppclass G2[curve]:
         G2() except +
@@ -36,6 +42,9 @@ cdef extern from "libff_wrapper.h":
         GT() except +
         GT(GT[curve] g) except +
 
+        GT[curve] operator^(Fr[curve] fr) except +
+        bool operator==(GT other) except +
+
     cdef size_t get_g2_exp_window_size(size_t g2_exp_count)
     cdef G2[curve] g2_mul(size_t window_size, window_table[G2[curve]] *g2_table, Fr[curve] other)
     cdef window_table[G2[curve]] get_g2_window_table(size_t window_size, G2[curve] elem)
@@ -47,6 +56,8 @@ cdef extern from "libff_wrapper.h":
 
     cdef Fr[curve] get_order "Fr<curve>::one"()
     cdef Fr[curve] Fr_get_random "Fr<curve>::random_element"()
+    cdef Fr[curve] Fr_get_random_nonzero()
+    cdef Fr[curve] Fr_get_random_nonorder()
 
     cdef G1[curve] get_g1_gen "G1<curve>::one"()
     cdef G2[curve] get_g2_gen "G2<curve>::one"()
