@@ -42,6 +42,9 @@ cdef extern from "libff_wrapper.h":
         GT() except +
         GT(GT[curve] g) except +
 
+        GT[curve] operator^(Fr[curve] fr) except +
+        bool operator==(GT other) except +
+
     cdef size_t get_g2_exp_window_size(size_t g2_exp_count)
     cdef G2[curve] g2_mul(size_t window_size, window_table[G2[curve]] *g2_table, Fr[curve] other)
     cdef window_table[G2[curve]] get_g2_window_table(size_t window_size, G2[curve] elem)

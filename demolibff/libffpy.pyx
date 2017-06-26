@@ -399,6 +399,28 @@ cdef class GTPy:
         if self._thisptr != NULL:
             del self._thisptr
 
+    def __pow__(x, y, z):
+        cdef GTPy gt
+        cdef BigNum bg
+
+        if not (isinstance(x, GTPy) and isinstance(y, BigNum)):
+            return NotImplemented
+
+        gt = <GTPy>x
+        bg = <BigNum>y
+
+        return gt.pow(bg)
+
+    def __richcmp__(x, y, op):
+        cdef GTPy left, right
+        if op != 2 or not(isinstance(x, GTPy) and isinstance(y, GTPy)):
+            return NotImplemented
+
+        left = <GTPy>x
+        right = <GTPy>y
+
+        return left.eq(right)
+
     cdef GT[curve]* getElemRef(self):
         return self._thisptr
 
@@ -406,10 +428,27 @@ cdef class GTPy:
         self.free()
         self._thisptr = g
 
-    def pair(self, G1Py g1, G2Py g2):
+    cdef GTPy createElem(self, GT[curve] *g):
+        cdef GTPy gt = GTPy(init=False)
+        gt.setElem(g)
+        return gt
+
+    cpdef GTPy pow(self, BigNum bg):
+        cdef GT[curve] *newptr
+        cdef Fr[curve] fr = bg.getElemRef()[0]
+        newptr = new GT[curve](self.getElemRef()[0] ^ fr)
+        return self.createElem(newptr)
+
+    cpdef bool eq(self, GTPy other):
+        return self.getElemRef()[0] == other.getElemRef()[0]
+
+    @staticmethod
+    def pair(G1Py g1, G2Py g2):
+        cdef GTPy gt = GTPy(init=False)
         cdef GT[curve] *newptr;
         newptr = new GT[curve](reduced_pairing(g1.getElemRef()[0], g2.getElemRef()[0]))
-        self.setElem(newptr)
+        gt.setElem(newptr)
+        return gt
 
 
 cdef class LibffPy:
@@ -434,6 +473,5 @@ cdef class LibffPy:
         return self.g2
 
     def pair(self, G1Py g1, G2Py g2):
-        gt = GTPy(init=False)
-        gt.pair(g1, g2)
+        gt = GTPy.pair(g1, g2)
         return gt
