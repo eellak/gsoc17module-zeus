@@ -47,6 +47,8 @@ cdef extern from "libff_wrapper.h":
 
     cdef Fr[curve] get_order "Fr<curve>::one"()
     cdef Fr[curve] Fr_get_random "Fr<curve>::random_element"()
+    cdef Fr[curve] Fr_get_random_nonzero()
+    cdef Fr[curve] Fr_get_random_nonorder()
 
     cdef G1[curve] get_g1_gen "G1<curve>::one"()
     cdef G2[curve] get_g2_gen "G2<curve>::one"()

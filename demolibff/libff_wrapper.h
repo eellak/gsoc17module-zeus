@@ -17,4 +17,5 @@ size_t get_g1_exp_window_size(size_t g1_exp_count);
 window_table<G1<curve>> get_g1_window_table(size_t window_size, G1<curve> elem);
 G1<curve> g1_mul(size_t window_size, window_table<G1<curve>> *g1_table, Fr<curve> other);
 
-Fr<curve> get_order();
+Fr<curve> Fr_get_random_nonzero();
+Fr<curve> Fr_get_random_nonorder();
