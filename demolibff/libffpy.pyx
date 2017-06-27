@@ -3,9 +3,12 @@ cimport libffpy
 cdef class BigNum:
     cdef Fr[curve] *_thisptr
 
-    def __cinit__(self, init=True):
+    def __cinit__(self, num=None, init=True):
         if init:
-            self._thisptr = new Fr[curve](Fr_get_random())
+            if num and (isinstance(num, int) or isinstance(num, long)):
+                self._thisptr = new Fr[curve](<long long>num)
+            else:
+                self._thisptr = new Fr[curve](Fr_get_random())
 
     def __dealloc__(self):
         self.free()
@@ -17,7 +20,7 @@ cdef class BigNum:
     @staticmethod
     def getOrder():
         cdef Fr[curve] *newptr
-        cdef BigNum res = BigNum()
+        cdef BigNum res = BigNum(init=False)
 
         newptr = new Fr[curve](get_order())
         res.setElem(newptr)
@@ -41,12 +44,12 @@ cdef class BigNum:
         newptr = new Fr[curve](self.getElemRef()[0] + other.getElemRef()[0])
         return self.createElem(newptr)
 
-    cpdef BigNum addInt(self, int other):
+    cpdef BigNum addInt(self, long long other):
         cdef Fr[curve] *newptr
         newptr = new Fr[curve](self.getElemRef()[0] + other)
         return self.createElem(newptr)
 
-    cpdef BigNum subInt(self, int other, neg=False):
+    cpdef BigNum subInt(self, long long other, neg=False):
         cdef Fr[curve] *newptr
         if neg:
             newptr = new Fr[curve](-self.getElemRef()[0] + other)
@@ -85,7 +88,7 @@ cdef class BigNum:
 
     def __add__(x, y):
         cdef BigNum bgleft, bgright
-        cdef int intright
+        cdef long long intright
 
         if not (isinstance(x, BigNum) or isinstance(y, BigNum)):
             return NotImplemented
@@ -95,17 +98,17 @@ cdef class BigNum:
                 bgleft = <BigNum>x
                 bgright = <BigNum>y
                 return bgleft.add(bgright)
-            elif isinstance(y, int):
+            elif isinstance(y, int) or isinstance(y, long):
                 bgleft = <BigNum>x
-                intright = <int>y
+                intright = <long long>y
                 return bgleft.addInt(intright)
             else:
                 return NotImplemented
 
         # y is bignum
-        if isinstance(x, int):
+        if isinstance(x, int) or isinstance(x, long):
             bgleft = <BigNum>y
-            intright = <int>x
+            intright = <long long>x
             return bgleft.addInt(intright)
 
         return NotImplemented
@@ -113,7 +116,7 @@ cdef class BigNum:
 
     def __sub__(x, y):
         cdef BigNum bgleft, bgright
-        cdef int intright
+        cdef long long intright
 
         if not (isinstance(x, BigNum) or isinstance(y, BigNum)):
             return NotImplemented
@@ -123,20 +126,54 @@ cdef class BigNum:
                 bgleft = <BigNum>x
                 bgright = <BigNum>y
                 return bgleft.sub(bgright)
-            elif isinstance(y, int):
+            elif isinstance(y, int) or isinstance(y, long):
                 bgleft = <BigNum>x
-                intright = <int>y
+                intright = <long long>y
                 return bgleft.subInt(intright)
             else:
                 return NotImplemented
 
         # y is bignum
-        if isinstance(x, int):
+        if isinstance(x, int) or isinstance(x, long):
             bgleft = <BigNum>y
-            intright = <int>x
+            intright = <long long>x
             return bgleft.subInt(intright, neg=True)
 
         return NotImplemented
+
+    cpdef BigNum mul(self, BigNum other):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](self.getElemRef()[0] * other.getElemRef()[0])
+        return self.createElem(newptr)
+
+    cpdef BigNum mulInt(self, long long other):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](self.getElemRef()[0] * other)
+        return self.createElem(newptr)
+
+    def __mul__(x, y):
+        cdef BigNum left, right
+        cdef long long intright
+        if not (isinstance(x, BigNum) or isinstance(y, BigNum)):
+            return NotImplemented
+
+        if isinstance(x, BigNum):
+            left = <BigNum>x
+            if isinstance(y, BigNum):
+                right = <BigNum>y
+                return left.mul(right)
+
+            if isinstance(y, int) or isinstance(y, long):
+                intright = <long long>y
+                return left.mulInt(intright)
+
+        left = <BigNum>y
+        if isinstance(x, int):
+            intright = <long long>x
+            return left.mulInt(intright)
+
+        return NotImplemented
+
 
     def __pow__(x, y, z):
         cdef BigNum bg
