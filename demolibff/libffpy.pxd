@@ -25,6 +25,7 @@ cdef extern from "libff_wrapper.h":
         Fr[curve] operator^(unsigned long long other) except +
         bool operator==(Fr[curve] other) except +
         Fr[curve] invert() except +
+        void cprint"print"() except +
 
     cdef cppclass G2[curve]:
         G2() except +
@@ -39,6 +40,7 @@ cdef extern from "libff_wrapper.h":
 
         G1[curve] operator+(G1[curve] other) except +
         bool operator==(G1 other) except +
+        void cprint"print"() except +
 
     cdef cppclass GT[curve]:
         GT() except +

@@ -204,6 +204,9 @@ cdef class BigNum:
 
         return left.eq(right)
 
+    cpdef pyprint(self):
+        self.getElemRef()[0].cprint()
+
 
 cdef class G1Py:
     cdef G1[curve] *_thisptr
@@ -312,6 +315,9 @@ cdef class G1Py:
         right = <G1Py>y
 
         return left.eq(right)
+
+    cpdef pyprint(self):
+        self.getElemRef()[0].cprint()
 
 
 cdef class G2Py:
