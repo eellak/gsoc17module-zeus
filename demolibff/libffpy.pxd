@@ -32,6 +32,7 @@ cdef extern from "libff_wrapper.h":
         G2(G2[curve] g) except +
 
         G2[curve] operator+(G2[curve] other) except +
+        G2[curve] operator-(G2[curve] other) except +
         bool operator==(G2[curve] other) except +
 
     cdef cppclass G1[curve]:
@@ -39,6 +40,7 @@ cdef extern from "libff_wrapper.h":
         G1(G1[curve] g) except +
 
         G1[curve] operator+(G1[curve] other) except +
+        G1[curve] operator-(G1[curve] other) except +
         bool operator==(G1 other) except +
         void cprint"print"() except +
 
@@ -47,6 +49,8 @@ cdef extern from "libff_wrapper.h":
         GT(GT[curve] g) except +
 
         GT[curve] operator^(Fr[curve] fr) except +
+        GT[curve] operator*(GT[curve] other) except +
+        GT[curve] unitary_inverse() except +
         bool operator==(GT other) except +
 
     cdef size_t get_g2_exp_window_size(size_t g2_exp_count)

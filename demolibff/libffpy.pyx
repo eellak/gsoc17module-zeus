@@ -260,6 +260,11 @@ cdef class G1Py:
         newptr = new G1[curve](self.getElemRef()[0] + other.getElemRef()[0])
         return self.createElem(newptr)
 
+    cpdef G1Py sub(self, G1Py other):
+        cdef G1[curve] *newptr
+        newptr = new G1[curve](self.getElemRef()[0] - other.getElemRef()[0])
+        return self.createElem(newptr)
+
     cpdef eq(self, G1Py other):
         return self.getElemRef()[0] == other.getElemRef()[0]
 
@@ -305,6 +310,17 @@ cdef class G1Py:
         right = <G1Py>y
 
         return left.add(right)
+
+    def __sub__(x, y):
+        cdef G1Py left, right
+
+        if not (isinstance(x, G1Py) and isinstance(y, G1Py)):
+            return NotImplemented
+
+        left = <G1Py>x
+        right = <G1Py>y
+
+        return left.sub(right)
 
     def __richcmp__(x, y, int op):
         cdef G1Py left, right
@@ -372,6 +388,11 @@ cdef class G2Py:
         newptr = new G2[curve](self.getElemRef()[0] + other.getElemRef()[0])
         return self.createElem(newptr)
 
+    cpdef G2Py sub(self, G2Py other):
+        cdef G2[curve] *newptr
+        newptr = new G2[curve](self.getElemRef()[0] - other.getElemRef()[0])
+        return self.createElem(newptr)
+
     cpdef eq(self, G2Py other):
         return self.getElemRef()[0] == other.getElemRef()[0]
 
@@ -417,6 +438,17 @@ cdef class G2Py:
 
         return left.add(right)
 
+    def __sub__(x, y):
+        cdef G2Py left, right
+
+        if not (isinstance(x, G2Py) and isinstance(y, G2Py)):
+            return NotImplemented
+
+        left = <G2Py>x
+        right = <G2Py>y
+
+        return left.sub(right)
+
     def __richcmp__(x, y, op):
         cdef G2Py left, right
 
@@ -447,6 +479,17 @@ cdef class GTPy:
         if self._thisptr != NULL:
             del self._thisptr
 
+    def __mul__(x, y):
+        cdef GTPy left, right
+
+        if not (isinstance(x, GTPy) and isinstance(y, GTPy)):
+            return NotImplemented
+
+        left = <GTPy>x
+        right = <GTPy>y
+
+        return left.mul(right)
+
     def __pow__(x, y, z):
         cdef GTPy gt
         cdef BigNum bg
@@ -469,6 +512,11 @@ cdef class GTPy:
 
         return left.eq(right)
 
+    cpdef GTPy inv(self):
+        cdef GT[curve] *newptr
+        newptr = new GT[curve](self.getElemRef()[0].unitary_inverse())
+        return self.createElem(newptr)
+
     cdef GT[curve]* getElemRef(self):
         return self._thisptr
 
@@ -480,6 +528,11 @@ cdef class GTPy:
         cdef GTPy gt = GTPy(init=False)
         gt.setElem(g)
         return gt
+
+    cpdef GTPy mul(self, GTPy other):
+        cdef GT[curve] *newptr
+        newptr = new GT[curve](self.getElemRef()[0] * other.getElemRef()[0])
+        return self.createElem(newptr)
 
     cpdef GTPy pow(self, BigNum bg):
         cdef GT[curve] *newptr
@@ -493,7 +546,7 @@ cdef class GTPy:
     @staticmethod
     def pair(G1Py g1, G2Py g2):
         cdef GTPy gt = GTPy(init=False)
-        cdef GT[curve] *newptr;
+        cdef GT[curve] *newptr
         newptr = new GT[curve](reduced_pairing(g1.getElemRef()[0], g2.getElemRef()[0]))
         gt.setElem(newptr)
         return gt
