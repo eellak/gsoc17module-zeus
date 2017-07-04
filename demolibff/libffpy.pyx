@@ -551,6 +551,9 @@ cdef class GTPy:
         gt.setElem(newptr)
         return gt
 
+    cpdef pyprint(self):
+        self.getElemRef()[0].cprint()
+
 
 cdef class LibffPy:
     cdef G1Py g1
