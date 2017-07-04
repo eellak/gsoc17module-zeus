@@ -285,26 +285,21 @@ cdef class G1Py:
             return NotImplemented
 
         if isinstance(x, G1Py):
+            g1 = <G1Py>x
             if isinstance(y, BigNum):
                 bg = <BigNum>y
-            elif isinstance(y, int):
-                fr = new Fr[curve](<int>y)
-                bg = BigNum(init=False)
-                bg.setElem(fr)
+            elif isinstance(y, int) or isinstance(y, long):
+                bg = BigNum(<long long>y)
             else:
                 return NotImplemented
-
-            g1 = <G1Py>x
-        elif isinstance(x, BigNum):
-            g1 = <G1Py>y
-            bg = <BigNum>x
-        elif isinstance(x, int):
-            g1 = <G1Py>y
-            fr = new Fr[curve](<int>x)
-            bg = BigNum(init=False)
-            bg.setElem(fr)
         else:
-            return NotImplemented
+            g1 = <G1Py>y
+            if isinstance(x, BigNum):
+                bg = <BigNum>x
+            elif isinstance(x, int) or isinstance(x, long):
+                bg = BigNum(<long long>x)
+            else:
+                return NotImplemented
 
         return g1.mul(bg)
 
