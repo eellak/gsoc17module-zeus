@@ -233,6 +233,14 @@ cdef class G1Py:
         self.g1_window_size = get_g1_exp_window_size(self.g1_exp_count)
         self.g1_table = new window_table[G1[curve]](get_g1_window_table(self.g1_window_size, self.getElemRef()[0]))
 
+    @staticmethod
+    def inf():
+        cdef G1[curve] *newptr
+        cdef G1Py g = G1Py(init=False)
+        newptr = new G1[curve](get_g1_zero())
+        g.setElem(newptr)
+        return g
+
     def free(self):
         if self._thisptr != NULL:
             del self._thisptr
@@ -360,6 +368,14 @@ cdef class G2Py:
         self.g2_exp_count = n + 6
         self.g2_window_size = get_g2_exp_window_size(self.g2_exp_count)
         self.g2_table = new window_table[G2[curve]](get_g2_window_table(self.g2_window_size, self.getElemRef()[0]))
+
+    @staticmethod
+    def inf():
+        cdef G2[curve] *newptr
+        cdef G2Py g = G2Py(init=False)
+        newptr = new G2[curve](get_g2_zero())
+        g.setElem(newptr)
+        return g
 
     def free(self):
         if self._thisptr != NULL:
@@ -542,6 +558,14 @@ cdef class GTPy:
 
     cpdef bool eq(self, GTPy other):
         return self.getElemRef()[0] == other.getElemRef()[0]
+
+    @staticmethod
+    def one():
+        cdef GTPy gt = GTPy(init=False)
+        cdef GT[curve] *newptr
+        newptr = new GT[curve](get_gt_one())
+        gt.setElem(newptr)
+        return gt
 
     @staticmethod
     def pair(G1Py g1, G2Py g2):

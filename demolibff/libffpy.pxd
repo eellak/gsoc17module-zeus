@@ -70,3 +70,8 @@ cdef extern from "libff_wrapper.h":
 
     cdef G1[curve] get_g1_gen "G1<curve>::one"()
     cdef G2[curve] get_g2_gen "G2<curve>::one"()
+
+    cdef G1[curve] get_g1_zero "G1<curve>::zero"()
+    cdef G2[curve] get_g2_zero "G2<curve>::zero"()
+
+    cdef GT[curve] get_gt_one "GT<curve>::one"()
