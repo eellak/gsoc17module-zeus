@@ -230,7 +230,7 @@ cdef class G1Py:
         if self.g1_table != NULL:
             del self.g1_table
 
-    def init(self, int n):
+    def initWindowTable(self, int n):
         self.g1_exp_count = 4 * n + 7;
         self.g1_window_size = get_g1_exp_window_size(self.g1_exp_count)
         self.g1_table = new window_table[G1[curve]](get_g1_window_table(self.g1_window_size, self.getElemRef()[0]))
@@ -371,7 +371,7 @@ cdef class G2Py:
         if self.g2_table != NULL:
             del self.g2_table
 
-    def init(self, int n):
+    def initWindowTable(self, int n):
         self.g2_exp_count = n + 6
         self.g2_window_size = get_g2_exp_window_size(self.g2_exp_count)
         self.g2_table = new window_table[G2[curve]](get_g2_window_table(self.g2_window_size, self.getElemRef()[0]))
@@ -595,8 +595,8 @@ cdef class LibffPy:
         self.g1 = G1Py()
         self.g2 = G2Py()
 
-        self.g1.init(n)
-        self.g2.init(n)
+        self.g1.initWindowTable(n)
+        self.g2.initWindowTable(n)
 
     def order(self):
         return BigNum.getOrder()
