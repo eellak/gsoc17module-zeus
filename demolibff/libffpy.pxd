@@ -5,6 +5,9 @@ cdef extern from "libff_wrapper.h":
     cdef cppclass curve:
         pass
 
+    cdef cppclass bignum:
+        pass
+
     cdef cppclass fp"mie::Fp":
         string.string *toString(int)
 
@@ -18,6 +21,7 @@ cdef extern from "libff_wrapper.h":
         Fr() except +
         Fr(Fr[curve] f) except +
         Fr(long long n) except +
+        Fr(bignum b) except +
 
         Fr[curve] operator+(Fr[curve] other) except +
         Fr[curve] operator+(long long int other) except +
@@ -68,7 +72,7 @@ cdef extern from "libff_wrapper.h":
     cdef window_table[G1[curve]] get_g1_window_table(size_t window_size, G1[curve] elem)
     cdef GT[curve] reduced_pairing "curve::reduced_pairing"(G1[curve] g1, G2[curve] g2)
 
-    cdef Fr[curve] get_order "Fr<curve>::one"()
+    cdef bignum get_order "Fr<curve>::field_char"()
     cdef Fr[curve] Fr_get_random "Fr<curve>::random_element"()
     cdef Fr[curve] Fr_get_random_nonzero()
     cdef Fr[curve] Fr_get_random_nonorder()

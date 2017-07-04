@@ -17,7 +17,7 @@ print "BigNum creation ellapsed: %s" % (end - start)
 
 s = reduce((lambda x,y: x + y), bg)
 
-bg.append(bg[0].getOrder() - s)
+bg.append(bg[0].getOrder() + 1 - s)
 
 
 start = datetime.datetime.now()
