@@ -22,9 +22,9 @@ cdef extern from "libff_wrapper.h":
         Fr[curve] operator-() except +
         Fr[curve] operator*(Fr[curve] other) except +
         Fr[curve] operator*(long long other) except +
-        Fr[curve] operator^(unsigned long long other) except +
+        Fr[curve] operator^(unsigned long other) except +
         bool operator==(Fr[curve] other) except +
-        Fr[curve] invert() except +
+        Fr[curve] inverse() except +
         void cprint"print"() except +
 
     cdef cppclass G2[curve]:

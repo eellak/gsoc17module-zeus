@@ -66,14 +66,14 @@ cdef class BigNum:
     cpdef eq(self, BigNum other):
         return self.getElemRef()[0] == other.getElemRef()[0]
 
-    cpdef BigNum pow(self, unsigned long long p):
+    cpdef BigNum pow(self, unsigned long p):
         cdef Fr[curve] *newptr
         newptr = new Fr[curve](self.getElemRef()[0] ^ p)
         return self.createElem(newptr)
 
     cpdef BigNum mod_inverse(self):
         cdef Fr[curve] *newptr
-        newptr = new Fr[curve](self.getElemRef()[0].invert())
+        newptr = new Fr[curve](self.getElemRef()[0].inverse())
         return self.createElem(newptr)
 
     cpdef BigNum random(self, nonzero=False, nonorder=False):
@@ -177,7 +177,7 @@ cdef class BigNum:
 
     def __pow__(x, y, z):
         cdef BigNum bg
-        cdef long long p
+        cdef unsigned long p
         if not isinstance(x, BigNum):
             return NotImplemented
 
@@ -185,7 +185,7 @@ cdef class BigNum:
             return NotImplemented
 
         bg = <BigNum>x
-        p = <unsigned long long>y
+        p = <unsigned long>y
 
         return bg.pow(p)
 
@@ -203,6 +203,11 @@ cdef class BigNum:
         right = <BigNum>y
 
         return left.eq(right)
+
+    def __neg__(self):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](-self.getElemRef()[0])
+        return self.createElem(newptr)
 
     cpdef pyprint(self):
         self.getElemRef()[0].cprint()
