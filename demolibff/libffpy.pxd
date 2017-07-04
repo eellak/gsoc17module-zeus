@@ -1,8 +1,12 @@
-from libcpp cimport bool
+from libcpp cimport bool, string
+
 
 cdef extern from "libff_wrapper.h":
     cdef cppclass curve:
         pass
+
+    cdef cppclass fp"mie::Fp":
+        string.string *toString(int)
 
     cdef cppclass window_table[G]:
         window_table() except +
@@ -43,6 +47,7 @@ cdef extern from "libff_wrapper.h":
         G1[curve] operator-(G1[curve] other) except +
         bool operator==(G1 other) except +
         void cprint"print"() except +
+        fp *coord
 
     cdef cppclass GT[curve]:
         GT() except +

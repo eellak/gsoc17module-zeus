@@ -1,5 +1,7 @@
 cimport libffpy
 
+from libcpp.string cimport string
+
 cdef class BigNum:
     cdef Fr[curve] *_thisptr
 
@@ -302,6 +304,16 @@ cdef class G1Py:
                 return NotImplemented
 
         return g1.mul(bg)
+
+    def __hash__(self):
+        cdef G1[curve] *elem
+        elem = self.getElemRef()
+
+        cdef string mystr = elem[0].coord[0].toString(10)[0] + \
+            elem[0].coord[1].toString(10)[0] + \
+            elem[0].coord[2].toString(10)[0]
+
+        return hash(mystr)
 
     def __add__(x, y):
         cdef G1Py left, right
