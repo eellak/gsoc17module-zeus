@@ -1,11 +1,19 @@
 cimport libffpy
 
+from libcpp.string cimport string
+
+cdef G1_mul_table = {}
+cdef G2_mul_table = {}
+
 cdef class BigNum:
     cdef Fr[curve] *_thisptr
 
-    def __cinit__(self, init=True):
+    def __cinit__(self, num=None, init=True):
         if init:
-            self._thisptr = new Fr[curve](Fr_get_random())
+            if num and (isinstance(num, int) or isinstance(num, long)):
+                self._thisptr = new Fr[curve](<long long>num)
+            else:
+                self._thisptr = new Fr[curve](Fr_get_random())
 
     def __dealloc__(self):
         self.free()
@@ -17,7 +25,7 @@ cdef class BigNum:
     @staticmethod
     def getOrder():
         cdef Fr[curve] *newptr
-        cdef BigNum res = BigNum()
+        cdef BigNum res = BigNum(init=False)
 
         newptr = new Fr[curve](get_order())
         res.setElem(newptr)
@@ -41,12 +49,12 @@ cdef class BigNum:
         newptr = new Fr[curve](self.getElemRef()[0] + other.getElemRef()[0])
         return self.createElem(newptr)
 
-    cpdef BigNum addInt(self, int other):
+    cpdef BigNum addInt(self, long long other):
         cdef Fr[curve] *newptr
         newptr = new Fr[curve](self.getElemRef()[0] + other)
         return self.createElem(newptr)
 
-    cpdef BigNum subInt(self, int other, neg=False):
+    cpdef BigNum subInt(self, long long other, neg=False):
         cdef Fr[curve] *newptr
         if neg:
             newptr = new Fr[curve](-self.getElemRef()[0] + other)
@@ -63,14 +71,14 @@ cdef class BigNum:
     cpdef eq(self, BigNum other):
         return self.getElemRef()[0] == other.getElemRef()[0]
 
-    cpdef BigNum pow(self, unsigned long long p):
+    cpdef BigNum pow(self, unsigned long p):
         cdef Fr[curve] *newptr
         newptr = new Fr[curve](self.getElemRef()[0] ^ p)
         return self.createElem(newptr)
 
     cpdef BigNum mod_inverse(self):
         cdef Fr[curve] *newptr
-        newptr = new Fr[curve](self.getElemRef()[0].invert())
+        newptr = new Fr[curve](self.getElemRef()[0].inverse())
         return self.createElem(newptr)
 
     cpdef BigNum random(self, nonzero=False, nonorder=False):
@@ -85,7 +93,7 @@ cdef class BigNum:
 
     def __add__(x, y):
         cdef BigNum bgleft, bgright
-        cdef int intright
+        cdef long long intright
 
         if not (isinstance(x, BigNum) or isinstance(y, BigNum)):
             return NotImplemented
@@ -95,17 +103,17 @@ cdef class BigNum:
                 bgleft = <BigNum>x
                 bgright = <BigNum>y
                 return bgleft.add(bgright)
-            elif isinstance(y, int):
+            elif isinstance(y, int) or isinstance(y, long):
                 bgleft = <BigNum>x
-                intright = <int>y
+                intright = <long long>y
                 return bgleft.addInt(intright)
             else:
                 return NotImplemented
 
         # y is bignum
-        if isinstance(x, int):
+        if isinstance(x, int) or isinstance(x, long):
             bgleft = <BigNum>y
-            intright = <int>x
+            intright = <long long>x
             return bgleft.addInt(intright)
 
         return NotImplemented
@@ -113,7 +121,7 @@ cdef class BigNum:
 
     def __sub__(x, y):
         cdef BigNum bgleft, bgright
-        cdef int intright
+        cdef long long intright
 
         if not (isinstance(x, BigNum) or isinstance(y, BigNum)):
             return NotImplemented
@@ -123,24 +131,58 @@ cdef class BigNum:
                 bgleft = <BigNum>x
                 bgright = <BigNum>y
                 return bgleft.sub(bgright)
-            elif isinstance(y, int):
+            elif isinstance(y, int) or isinstance(y, long):
                 bgleft = <BigNum>x
-                intright = <int>y
+                intright = <long long>y
                 return bgleft.subInt(intright)
             else:
                 return NotImplemented
 
         # y is bignum
-        if isinstance(x, int):
+        if isinstance(x, int) or isinstance(x, long):
             bgleft = <BigNum>y
-            intright = <int>x
+            intright = <long long>x
             return bgleft.subInt(intright, neg=True)
 
         return NotImplemented
 
+    cpdef BigNum mul(self, BigNum other):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](self.getElemRef()[0] * other.getElemRef()[0])
+        return self.createElem(newptr)
+
+    cpdef BigNum mulInt(self, long long other):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](self.getElemRef()[0] * other)
+        return self.createElem(newptr)
+
+    def __mul__(x, y):
+        cdef BigNum left, right
+        cdef long long intright
+        if not (isinstance(x, BigNum) or isinstance(y, BigNum)):
+            return NotImplemented
+
+        if isinstance(x, BigNum):
+            left = <BigNum>x
+            if isinstance(y, BigNum):
+                right = <BigNum>y
+                return left.mul(right)
+
+            if isinstance(y, int) or isinstance(y, long):
+                intright = <long long>y
+                return left.mulInt(intright)
+
+        left = <BigNum>y
+        if isinstance(x, int):
+            intright = <long long>x
+            return left.mulInt(intright)
+
+        return NotImplemented
+
+
     def __pow__(x, y, z):
         cdef BigNum bg
-        cdef long long p
+        cdef unsigned long p
         if not isinstance(x, BigNum):
             return NotImplemented
 
@@ -148,7 +190,7 @@ cdef class BigNum:
             return NotImplemented
 
         bg = <BigNum>x
-        p = <unsigned long long>y
+        p = <unsigned long>y
 
         return bg.pow(p)
 
@@ -167,6 +209,14 @@ cdef class BigNum:
 
         return left.eq(right)
 
+    def __neg__(self):
+        cdef Fr[curve] *newptr
+        newptr = new Fr[curve](-self.getElemRef()[0])
+        return self.createElem(newptr)
+
+    cpdef pyprint(self):
+        self.getElemRef()[0].cprint()
+
 
 cdef class G1Py:
     cdef G1[curve] *_thisptr
@@ -183,10 +233,29 @@ cdef class G1Py:
         if self.g1_table != NULL:
             del self.g1_table
 
-    def init(self, int n):
+    def initWindowTable(self, int n):
         self.g1_exp_count = 4 * n + 7;
         self.g1_window_size = get_g1_exp_window_size(self.g1_exp_count)
         self.g1_table = new window_table[G1[curve]](get_g1_window_table(self.g1_window_size, self.getElemRef()[0]))
+
+    @staticmethod
+    def inf():
+        cdef G1[curve] *newptr
+        cdef G1Py g = G1Py(init=False)
+        newptr = new G1[curve](get_g1_zero())
+        g.setElem(newptr)
+        return g
+
+    @staticmethod
+    def getFromMulTable(g1):
+        if g1 in G1_mul_table:
+            return G1_mul_table[g1]
+
+        return None
+
+    @staticmethod
+    def setOnMulTable(g1):
+        G1_mul_table[g1] = g1
 
     def free(self):
         if self._thisptr != NULL:
@@ -202,17 +271,33 @@ cdef class G1Py:
     cdef G1Py createElem(self, G1[curve] *g):
         cdef G1Py g1 = G1Py(init=False)
         g1.setElem(g)
+        elem = G1Py.getFromMulTable(g1)
+        if elem:
+            del g1
+            return elem
+        else:
+            G1Py.setOnMulTable(g1)
+
         return g1
 
     cpdef G1Py mul(self, BigNum bgpy):
         cdef G1[curve] *newptr
         cdef Fr[curve] bg = bgpy.getElemRef()[0]
+        cdef G1Py elem
+        elem = G1Py.getFromMulTable(self)
+        if not elem:
+            G1Py.setOnMulTable(self)
         newptr = new G1[curve](g1_mul(self.g1_window_size, self.g1_table, bg))
         return self.createElem(newptr)
 
     cpdef G1Py add(self, G1Py other):
         cdef G1[curve] *newptr
         newptr = new G1[curve](self.getElemRef()[0] + other.getElemRef()[0])
+        return self.createElem(newptr)
+
+    cpdef G1Py sub(self, G1Py other):
+        cdef G1[curve] *newptr
+        newptr = new G1[curve](self.getElemRef()[0] - other.getElemRef()[0])
         return self.createElem(newptr)
 
     cpdef eq(self, G1Py other):
@@ -227,28 +312,33 @@ cdef class G1Py:
             return NotImplemented
 
         if isinstance(x, G1Py):
+            g1 = <G1Py>x
             if isinstance(y, BigNum):
                 bg = <BigNum>y
-            elif isinstance(y, int):
-                fr = new Fr[curve](<int>y)
-                bg = BigNum(init=False)
-                bg.setElem(fr)
+            elif isinstance(y, int) or isinstance(y, long):
+                bg = BigNum(<long long>y)
+            else:
+                return NotImplemented
+        else:
+            g1 = <G1Py>y
+            if isinstance(x, BigNum):
+                bg = <BigNum>x
+            elif isinstance(x, int) or isinstance(x, long):
+                bg = BigNum(<long long>x)
             else:
                 return NotImplemented
 
-            g1 = <G1Py>x
-        elif isinstance(x, BigNum):
-            g1 = <G1Py>y
-            bg = <BigNum>x
-        elif isinstance(x, int):
-            g1 = <G1Py>y
-            fr = new Fr[curve](<int>x)
-            bg = BigNum(init=False)
-            bg.setElem(fr)
-        else:
-            return NotImplemented
-
         return g1.mul(bg)
+
+    def __hash__(self):
+        cdef G1[curve] *elem
+        elem = self.getElemRef()
+
+        cdef string mystr = elem[0].coord[0].toString(10)[0] + \
+            elem[0].coord[1].toString(10)[0] + \
+            elem[0].coord[2].toString(10)[0]
+
+        return hash(mystr)
 
     def __add__(x, y):
         cdef G1Py left, right
@@ -260,6 +350,17 @@ cdef class G1Py:
         right = <G1Py>y
 
         return left.add(right)
+
+    def __sub__(x, y):
+        cdef G1Py left, right
+
+        if not (isinstance(x, G1Py) and isinstance(y, G1Py)):
+            return NotImplemented
+
+        left = <G1Py>x
+        right = <G1Py>y
+
+        return left.sub(right)
 
     def __richcmp__(x, y, int op):
         cdef G1Py left, right
@@ -275,6 +376,9 @@ cdef class G1Py:
         right = <G1Py>y
 
         return left.eq(right)
+
+    cpdef pyprint(self):
+        self.getElemRef()[0].cprint()
 
 
 cdef class G2Py:
@@ -292,10 +396,29 @@ cdef class G2Py:
         if self.g2_table != NULL:
             del self.g2_table
 
-    def init(self, int n):
+    def initWindowTable(self, int n):
         self.g2_exp_count = n + 6
         self.g2_window_size = get_g2_exp_window_size(self.g2_exp_count)
         self.g2_table = new window_table[G2[curve]](get_g2_window_table(self.g2_window_size, self.getElemRef()[0]))
+
+    @staticmethod
+    def inf():
+        cdef G2[curve] *newptr
+        cdef G2Py g = G2Py(init=False)
+        newptr = new G2[curve](get_g2_zero())
+        g.setElem(newptr)
+        return g
+
+    @staticmethod
+    def getFromMulTable(g2):
+        if g2 in G2_mul_table:
+            return G2_mul_table[g2]
+
+        return None
+
+    @staticmethod
+    def setOnMulTable(g2):
+        G2_mul_table[g2] = g2
 
     def free(self):
         if self._thisptr != NULL:
@@ -311,17 +434,35 @@ cdef class G2Py:
     cdef createElem(self, G2[curve] *g):
         cdef G2Py g2 = G2Py(init=False)
         g2.setElem(g)
+        elem = G2Py.getFromMulTable(g2)
+        if elem:
+            del g2
+            return elem
+        else:
+            G2Py.setOnMulTable(g2)
+
         return g2
 
     cpdef G2Py mul(self, BigNum bgpy):
         cdef G2[curve] *newptr
         cdef Fr[curve] bg = bgpy.getElemRef()[0]
+
+        cdef G2Py elem
+        elem = G2Py.getFromMulTable(self)
+        if not elem:
+            G2Py.setOnMulTable(self)
+
         newptr = new G2[curve](g2_mul(self.g2_window_size, self.g2_table, bg))
         return self.createElem(newptr)
 
     cpdef G2Py add(self, G2Py other):
         cdef G2[curve] *newptr
         newptr = new G2[curve](self.getElemRef()[0] + other.getElemRef()[0])
+        return self.createElem(newptr)
+
+    cpdef G2Py sub(self, G2Py other):
+        cdef G2[curve] *newptr
+        newptr = new G2[curve](self.getElemRef()[0] - other.getElemRef()[0])
         return self.createElem(newptr)
 
     cpdef eq(self, G2Py other):
@@ -358,6 +499,16 @@ cdef class G2Py:
 
         return g2.mul(bg)
 
+    def __hash__(self):
+        cdef G2[curve] *elem
+        elem = self.getElemRef()
+
+        cdef string mystr = elem[0].coord[0].toString(10)[0] + \
+            elem[0].coord[1].toString(10)[0] + \
+            elem[0].coord[2].toString(10)[0]
+
+        return hash(mystr)
+
     def __add__(x, y):
         cdef G2Py left, right
 
@@ -368,6 +519,17 @@ cdef class G2Py:
         right = <G2Py>y
 
         return left.add(right)
+
+    def __sub__(x, y):
+        cdef G2Py left, right
+
+        if not (isinstance(x, G2Py) and isinstance(y, G2Py)):
+            return NotImplemented
+
+        left = <G2Py>x
+        right = <G2Py>y
+
+        return left.sub(right)
 
     def __richcmp__(x, y, op):
         cdef G2Py left, right
@@ -399,6 +561,17 @@ cdef class GTPy:
         if self._thisptr != NULL:
             del self._thisptr
 
+    def __mul__(x, y):
+        cdef GTPy left, right
+
+        if not (isinstance(x, GTPy) and isinstance(y, GTPy)):
+            return NotImplemented
+
+        left = <GTPy>x
+        right = <GTPy>y
+
+        return left.mul(right)
+
     def __pow__(x, y, z):
         cdef GTPy gt
         cdef BigNum bg
@@ -421,6 +594,11 @@ cdef class GTPy:
 
         return left.eq(right)
 
+    cpdef GTPy inv(self):
+        cdef GT[curve] *newptr
+        newptr = new GT[curve](self.getElemRef()[0].unitary_inverse())
+        return self.createElem(newptr)
+
     cdef GT[curve]* getElemRef(self):
         return self._thisptr
 
@@ -433,6 +611,11 @@ cdef class GTPy:
         gt.setElem(g)
         return gt
 
+    cpdef GTPy mul(self, GTPy other):
+        cdef GT[curve] *newptr
+        newptr = new GT[curve](self.getElemRef()[0] * other.getElemRef()[0])
+        return self.createElem(newptr)
+
     cpdef GTPy pow(self, BigNum bg):
         cdef GT[curve] *newptr
         cdef Fr[curve] fr = bg.getElemRef()[0]
@@ -443,12 +626,23 @@ cdef class GTPy:
         return self.getElemRef()[0] == other.getElemRef()[0]
 
     @staticmethod
+    def one():
+        cdef GTPy gt = GTPy(init=False)
+        cdef GT[curve] *newptr
+        newptr = new GT[curve](get_gt_one())
+        gt.setElem(newptr)
+        return gt
+
+    @staticmethod
     def pair(G1Py g1, G2Py g2):
         cdef GTPy gt = GTPy(init=False)
-        cdef GT[curve] *newptr;
+        cdef GT[curve] *newptr
         newptr = new GT[curve](reduced_pairing(g1.getElemRef()[0], g2.getElemRef()[0]))
         gt.setElem(newptr)
         return gt
+
+    cpdef pyprint(self):
+        self.getElemRef()[0].cprint()
 
 
 cdef class LibffPy:
@@ -460,8 +654,8 @@ cdef class LibffPy:
         self.g1 = G1Py()
         self.g2 = G2Py()
 
-        self.g1.init(n)
-        self.g2.init(n)
+        self.g1.initWindowTable(n)
+        self.g2.initWindowTable(n)
 
     def order(self):
         return BigNum.getOrder()
