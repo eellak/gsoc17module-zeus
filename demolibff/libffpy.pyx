@@ -450,6 +450,16 @@ cdef class G2Py:
 
         return g2.mul(bg)
 
+    def __hash__(self):
+        cdef G2[curve] *elem
+        elem = self.getElemRef()
+
+        cdef string mystr = elem[0].coord[0].toString(10)[0] + \
+            elem[0].coord[1].toString(10)[0] + \
+            elem[0].coord[2].toString(10)[0]
+
+        return hash(mystr)
+
     def __add__(x, y):
         cdef G2Py left, right
 

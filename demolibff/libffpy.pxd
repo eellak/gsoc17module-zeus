@@ -42,6 +42,7 @@ cdef extern from "libff_wrapper.h":
         G2[curve] operator+(G2[curve] other) except +
         G2[curve] operator-(G2[curve] other) except +
         bool operator==(G2[curve] other) except +
+        fp *coord
 
     cdef cppclass G1[curve]:
         G1() except +
