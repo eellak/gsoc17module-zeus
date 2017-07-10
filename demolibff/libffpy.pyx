@@ -2,9 +2,6 @@ cimport libffpy
 
 from libcpp.string cimport string
 
-cdef G1_mul_table = {}
-cdef G2_mul_table = {}
-
 cdef class BigNum:
     cdef Fr[curve] *_thisptr
 
