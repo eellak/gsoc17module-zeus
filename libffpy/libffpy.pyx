@@ -7,7 +7,7 @@ cdef class BigNum:
 
     def __cinit__(self, num=None, init=True):
         if init:
-            if num and (isinstance(num, int) or isinstance(num, long)):
+            if num is not None and (isinstance(num, int) or isinstance(num, long)):
                 self._thisptr = new Fr[curve](<long long>num)
             else:
                 self._thisptr = new Fr[curve](Fr_get_random())
