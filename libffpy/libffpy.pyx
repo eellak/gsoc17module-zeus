@@ -316,9 +316,9 @@ cdef class G1Py:
         cdef G1[curve] *elem
         elem = self.getElemRef()
 
-        cdef string mystr = elem[0].coord[0].toString(10)[0] + \
-            elem[0].coord[1].toString(10)[0] + \
-            elem[0].coord[2].toString(10)[0]
+        cdef string mystr = elem[0].coord[0].toString(10) + \
+            elem[0].coord[1].toString(10) + \
+            elem[0].coord[2].toString(10)
 
         return hash(mystr)
 
@@ -466,9 +466,9 @@ cdef class G2Py:
         cdef G2[curve] *elem
         elem = self.getElemRef()
 
-        cdef string mystr = elem[0].coord[0].toString(10)[0] + \
-            elem[0].coord[1].toString(10)[0] + \
-            elem[0].coord[2].toString(10)[0]
+        cdef string mystr = elem[0].coord[0].toString(10) + \
+            elem[0].coord[1].toString(10) + \
+            elem[0].coord[2].toString(10)
 
         return hash(mystr)
 
@@ -508,6 +508,9 @@ cdef class G2Py:
         right = <G2Py>y
 
         return left.eq(right)
+
+    cpdef pyprint(self):
+        self.getElemRef()[0].cprint()
 
 
 cdef class GTPy:

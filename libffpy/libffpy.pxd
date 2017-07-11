@@ -8,8 +8,11 @@ cdef extern from "libff_wrapper.h":
     cdef cppclass bignum:
         pass
 
-    cdef cppclass fp"mie::Fp":
-        string.string *toString(int)
+    cdef cppclass fp1"bn::Fp":
+        string.string toString(int)
+
+    cdef cppclass fp2"bn::Fp2":
+        string.string toString(int)
 
     cdef cppclass window_table[G]:
         window_table() except +
@@ -42,7 +45,8 @@ cdef extern from "libff_wrapper.h":
         G2[curve] operator+(G2[curve] other) except +
         G2[curve] operator-(G2[curve] other) except +
         bool operator==(G2[curve] other) except +
-        fp *coord
+        void cprint"print"() except +
+        fp2 *coord
 
     cdef cppclass G1[curve]:
         G1() except +
@@ -52,7 +56,7 @@ cdef extern from "libff_wrapper.h":
         G1[curve] operator-(G1[curve] other) except +
         bool operator==(G1 other) except +
         void cprint"print"() except +
-        fp *coord
+        fp1 *coord
 
     cdef cppclass GT[curve]:
         GT() except +
