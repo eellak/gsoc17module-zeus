@@ -2,15 +2,12 @@ cimport libffpy
 
 from libcpp.string cimport string
 
-cdef G1_mul_table = {}
-cdef G2_mul_table = {}
-
 cdef class BigNum:
     cdef Fr[curve] *_thisptr
 
     def __cinit__(self, num=None, init=True):
         if init:
-            if num and (isinstance(num, int) or isinstance(num, long)):
+            if num is not None and (isinstance(num, int) or isinstance(num, long)):
                 self._thisptr = new Fr[curve](<long long>num)
             else:
                 self._thisptr = new Fr[curve](Fr_get_random())
@@ -246,17 +243,6 @@ cdef class G1Py:
         g.setElem(newptr)
         return g
 
-    @staticmethod
-    def getFromMulTable(g1):
-        if g1 in G1_mul_table:
-            return G1_mul_table[g1]
-
-        return None
-
-    @staticmethod
-    def setOnMulTable(g1):
-        G1_mul_table[g1] = g1
-
     def free(self):
         if self._thisptr != NULL:
             del self._thisptr
@@ -271,24 +257,20 @@ cdef class G1Py:
     cdef G1Py createElem(self, G1[curve] *g):
         cdef G1Py g1 = G1Py(init=False)
         g1.setElem(g)
-        elem = G1Py.getFromMulTable(g1)
-        if elem:
-            del g1
-            return elem
-        else:
-            G1Py.setOnMulTable(g1)
-
         return g1
 
     cpdef G1Py mul(self, BigNum bgpy):
         cdef G1[curve] *newptr
+
         cdef Fr[curve] bg = bgpy.getElemRef()[0]
         cdef G1Py elem
-        elem = G1Py.getFromMulTable(self)
-        if not elem:
-            G1Py.setOnMulTable(self)
-        newptr = new G1[curve](g1_mul(self.g1_window_size, self.g1_table, bg))
+        if self.g1_table != NULL:
+            newptr = new G1[curve](g1_mul(self.g1_window_size, self.g1_table, bg))
+        else:
+            newptr = new G1[curve](bg * self.getElemRef()[0])
+
         return self.createElem(newptr)
+
 
     cpdef G1Py add(self, G1Py other):
         cdef G1[curve] *newptr
@@ -334,9 +316,9 @@ cdef class G1Py:
         cdef G1[curve] *elem
         elem = self.getElemRef()
 
-        cdef string mystr = elem[0].coord[0].toString(10)[0] + \
-            elem[0].coord[1].toString(10)[0] + \
-            elem[0].coord[2].toString(10)[0]
+        cdef string mystr = elem[0].coord[0].toString(10) + \
+            elem[0].coord[1].toString(10) + \
+            elem[0].coord[2].toString(10)
 
         return hash(mystr)
 
@@ -409,17 +391,6 @@ cdef class G2Py:
         g.setElem(newptr)
         return g
 
-    @staticmethod
-    def getFromMulTable(g2):
-        if g2 in G2_mul_table:
-            return G2_mul_table[g2]
-
-        return None
-
-    @staticmethod
-    def setOnMulTable(g2):
-        G2_mul_table[g2] = g2
-
     def free(self):
         if self._thisptr != NULL:
             del self._thisptr
@@ -434,25 +405,17 @@ cdef class G2Py:
     cdef createElem(self, G2[curve] *g):
         cdef G2Py g2 = G2Py(init=False)
         g2.setElem(g)
-        elem = G2Py.getFromMulTable(g2)
-        if elem:
-            del g2
-            return elem
-        else:
-            G2Py.setOnMulTable(g2)
-
         return g2
 
     cpdef G2Py mul(self, BigNum bgpy):
         cdef G2[curve] *newptr
         cdef Fr[curve] bg = bgpy.getElemRef()[0]
 
-        cdef G2Py elem
-        elem = G2Py.getFromMulTable(self)
-        if not elem:
-            G2Py.setOnMulTable(self)
+        if self.g2_table != NULL:
+            newptr = new G2[curve](g2_mul(self.g2_window_size, self.g2_table, bg))
+        else:
+            newptr = new G2[curve](bg * self.getElemRef()[0])
 
-        newptr = new G2[curve](g2_mul(self.g2_window_size, self.g2_table, bg))
         return self.createElem(newptr)
 
     cpdef G2Py add(self, G2Py other):
@@ -503,9 +466,9 @@ cdef class G2Py:
         cdef G2[curve] *elem
         elem = self.getElemRef()
 
-        cdef string mystr = elem[0].coord[0].toString(10)[0] + \
-            elem[0].coord[1].toString(10)[0] + \
-            elem[0].coord[2].toString(10)[0]
+        cdef string mystr = elem[0].coord[0].toString(10) + \
+            elem[0].coord[1].toString(10) + \
+            elem[0].coord[2].toString(10)
 
         return hash(mystr)
 
@@ -545,6 +508,9 @@ cdef class G2Py:
         right = <G2Py>y
 
         return left.eq(right)
+
+    cpdef pyprint(self):
+        self.getElemRef()[0].cprint()
 
 
 cdef class GTPy:

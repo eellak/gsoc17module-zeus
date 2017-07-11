@@ -8,8 +8,11 @@ cdef extern from "libff_wrapper.h":
     cdef cppclass bignum:
         pass
 
-    cdef cppclass fp"mie::Fp":
-        string.string *toString(int)
+    cdef cppclass fp1"bn::Fp":
+        string.string toString(int)
+
+    cdef cppclass fp2"bn::Fp2":
+        string.string toString(int)
 
     cdef cppclass window_table[G]:
         window_table() except +
@@ -42,7 +45,8 @@ cdef extern from "libff_wrapper.h":
         G2[curve] operator+(G2[curve] other) except +
         G2[curve] operator-(G2[curve] other) except +
         bool operator==(G2[curve] other) except +
-        fp *coord
+        void cprint"print"() except +
+        fp2 *coord
 
     cdef cppclass G1[curve]:
         G1() except +
@@ -52,7 +56,7 @@ cdef extern from "libff_wrapper.h":
         G1[curve] operator-(G1[curve] other) except +
         bool operator==(G1 other) except +
         void cprint"print"() except +
-        fp *coord
+        fp1 *coord
 
     cdef cppclass GT[curve]:
         GT() except +
@@ -63,6 +67,9 @@ cdef extern from "libff_wrapper.h":
         GT[curve] unitary_inverse() except +
         bool operator==(GT other) except +
         void cprint"print"() except +
+
+    G1[curve] operator*(Fr[curve], G1[curve]) except +
+    G2[curve] operator*(Fr[curve], G2[curve]) except +
 
     cdef size_t get_g2_exp_window_size(size_t g2_exp_count)
     cdef G2[curve] g2_mul(size_t window_size, window_table[G2[curve]] *g2_table, Fr[curve] other)
