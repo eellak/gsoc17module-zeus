@@ -313,8 +313,9 @@ cdef class G1Py:
         return g1.mul(bg)
 
     def __hash__(self):
-        cdef G1[curve] *elem
-        elem = self.getElemRef()
+        cdef G1[curve] *elem = new G1[curve](self.getElemRef()[0])
+
+        elem[0].to_affine_coordinates()
 
         cdef string mystr = elem[0].coord[0].toString(10) + \
             elem[0].coord[1].toString(10) + \
@@ -463,8 +464,9 @@ cdef class G2Py:
         return g2.mul(bg)
 
     def __hash__(self):
-        cdef G2[curve] *elem
-        elem = self.getElemRef()
+        cdef G2[curve] *elem = new G2[curve](self.getElemRef()[0])
+
+        elem[0].to_affine_coordinates()
 
         cdef string mystr = elem[0].coord[0].toString(10) + \
             elem[0].coord[1].toString(10) + \
