@@ -46,6 +46,7 @@ cdef extern from "libff_wrapper.h":
         G2[curve] operator-(G2[curve] other) except +
         bool operator==(G2[curve] other) except +
         void cprint"print"() except +
+        void to_affine_coordinates() except +
         fp2 *coord
 
     cdef cppclass G1[curve]:
@@ -56,6 +57,7 @@ cdef extern from "libff_wrapper.h":
         G1[curve] operator-(G1[curve] other) except +
         bool operator==(G1 other) except +
         void cprint"print"() except +
+        void to_affine_coordinates() except +
         fp1 *coord
 
     cdef cppclass GT[curve]:
