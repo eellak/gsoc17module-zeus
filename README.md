@@ -1,8 +1,13 @@
-Re-encryption Mix-net Module
+Implementation of a Re-Encryption Mix-Net
 ======================================================
 
-The mix-net used in [Zeus](https://github.com/grnet/zeus) is not sufficient.
-This module aims to replace the current mix-net implementation in favor of a faster one.
+This module implements the re-encryption mix-net proposed by
+Fauzi et al. The relevant paper can be found
+[here](https://eprint.iacr.org/2016/866.pdf)
+
+The purpose of this implementation is to replace the mix-net implementation
+used by [Zeus](https://github.com/grnet/zeus) in favor of a faster one,
+however it can be used by anyone that needs a mix-net implementation.
 
 Apart from e-voting, the mix-net can be used for other tasks such as surveys
 and collection of data from various IoT devices.
@@ -12,13 +17,18 @@ This mix-net implementation is based on the existing
 of a re-encryption mix-net proposed by Fauzi et al.
 
 
-libff Support
-=============
+Implementation
+==============
 
-This module uses [libff](https://github.com/scipr-lab/libff) for its elliptic
-curve computations. Since no Python wrapper exists for libff, we created one.
-The wrapper is implemented using Cython and it exists as a separate open source
-module.
+The mix-net is implemented using Python.
+
+Since the mix-net is based on elliptic curves, we used
+[libff](https://github.com/scipr-lab/libff) for our
+elliptic curve computations. But, libff is implemented in C++
+so in order for it to be used by our module, we've created a
+Cython wrapper for it. While not a complete wrapper, it can be
+used independently by anyone that needs to use the features provided
+by libff.
 
 
 Usage
@@ -28,12 +38,22 @@ There exists a
 [demo](https://github.com/eellak/gsoc17module-zeus/blob/master/src/demo.py)
 that shows the basic workflow of the mix-net module.
 
+Issues
+======
+
+CRS
+---
+
+In order for the mix-net to be truly decentralized and anonymous
+there needs to be a mechanism to create the Common Reference String
+anonymously.
+
 
 Organization
 ============
 
 This [project](https://summerofcode.withgoogle.com/projects/#6269134514946048)
-is being developed as part of the [Google Summer of Code](
+was developed as part of the [Google Summer of Code](
 https://summerofcode.withgoogle.com) program.
 
 Student: Vitalis Salis
@@ -45,15 +65,3 @@ Mentors:
 - Panos Louridas
 
 Organization: [Open Technologies Alliance - GFOSS](https://gfoss.eu/)
-
-
-Deliverables
-============
-
-On GSoC we will aim to:
-
-1. Experiment with the existing mix-net implementation on Zeus.
-2. Identify which of the existing mix-net publications are
-   fit to be implemented.
-3. Implement a new re-encryption mix-net prototype.
-4. Test the prototype and deploy to production.
