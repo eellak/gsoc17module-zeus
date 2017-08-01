@@ -30,6 +30,48 @@ Cython wrapper for it. While not a complete wrapper, it can be
 used independently by anyone that needs to use the features provided
 by libff.
 
+Installing Dependencies
+=======================
+
+1. Install [libsnark](https://github.com/scipr-lab/libsnark) following
+the instructions on its GitHub page.
+2. Install [libff](https://github.com/scipr-lab/libff) following
+the instructions on its GitHub page.
+3. Install package dependencies
+```
+    sudo apt-get install python python-pip
+```
+4. Install Cython
+```
+    pip install cython
+```
+
+Dependencies Notes
+==================
+
+We faced some issues while installing libff and libsnark on Ubuntu 16.04 LTS.
+If the installation process doesn't work try the following:
+
+- Install libsnark on `/usr/` with
+```
+make install PREFIX=/usr
+```
+after compiling it.
+
+- After installing libff, inside the cloned repo copy
+the third party libraries to the local includes.
+```
+cp -R third_party /usr/local/include/
+```
+
+- Add to the libff library (before compiling it) the `-fPIC`
+  flag on CMakeLists. Specifically on the
+  `CMakeLists.txt` file add `-fPIC` to the existing flags on `CMAKE_CXX_FLAGS`
+  and `CMAKE_EXE_LINKER_FLAGS`.
+
+- In order to avoid libff outputting profiling info change the variables
+  `inhibit_profiling_info` and `inhibit_profiling_counters` to `true` on
+  `src/common/profiling.cpp` before compiling the library.
 
 Usage
 =====
