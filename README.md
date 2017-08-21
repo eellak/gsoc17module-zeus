@@ -98,9 +98,6 @@ There exists a
 [demo](https://github.com/eellak/gsoc17module-zeus/blob/master/src/demo.py)
 that shows the basic workflow of the mix-net module.
 
-Issues
-======
-
 CRS
 ---
 
