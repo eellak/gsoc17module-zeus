@@ -3,9 +3,9 @@ Implementation of a Re-Encryption Mix-Net
 
 This module implements the re-encryption mix-net proposed by
 Fauzi et al. The relevant paper can be found
-[here](https://eprint.iacr.org/2016/866.pdf)
+[here](https://eprint.iacr.org/2016/866.pdf).
 
-The purpose of this implementation is to replace the mix-net implementation
+The purpose of this implementation is to replace the mix-net
 used by [Zeus](https://github.com/grnet/zeus) in favor of a faster one,
 however it can be used by anyone that needs a mix-net implementation.
 
@@ -16,19 +16,6 @@ This mix-net implementation is based on the existing
 [prototype](https://github.com/grnet/ac16)
 of a re-encryption mix-net proposed by Fauzi et al.
 
-
-Implementation
-==============
-
-The mix-net is implemented using Python.
-
-Since the mix-net is based on elliptic curves, we used
-[libff](https://github.com/scipr-lab/libff) for our
-elliptic curve computations. But, libff is implemented in C++
-so in order for it to be used by our module, we've created a
-Cython wrapper for it. While not a complete wrapper, it can be
-used independently by anyone that needs to use the features provided
-by libff.
 
 Installing Dependencies
 =======================
@@ -90,6 +77,50 @@ On the root directory run:
 ```
 python setup.py install
 ```
+
+Implementation
+==============
+
+libffpy
+-------
+
+The mix-net proposed by Fauzi et al requires elliptic curve computations.
+A suitable library that provides support for elliptic curve computations
+is libff [libff](https://github.com/scipr-lab/libff).
+
+Since libff is implemented in C++ we used Cython to create a wrapper
+for some of the features of libff. The Cython wrapper can be found in
+the folder `libffpy`. While not a complete wrapper, it can be
+used independently by anyone that needs the features provided by
+libff.
+
+The curve we used is bn128 and libff implements
+the [ate pairing](https://github.com/herumi/ate-pairing)
+for its bilinear pairing computations.
+
+Mix-Net Module
+--------------
+
+The mix-net is implemented using Python. It requires a working
+installation of libffpy.
+
+
+Challenges
+==========
+
+- The real bottleneck of the prototype is its performance. The prototype's
+performance was much slower than other implementations in C++. After some
+specific metrics we identified that the issue was that the multiplications
+on the elliptic curve elements were slow. The library implementing those
+multiplications was [bplib](https://github.com/gdanezis/bplib/).
+
+- bplip vs libff: Since the bottleneck were the multiplications on the elliptic
+curve, we looked at replacements for bplib. One such replacement is libff. bplib
+uses libraries provided by OpenSSL for its elliptic curve computations.
+We defined specific metrics and compared the underlying C code of bplib
+with libff. The results showed that libff was indeed faster than OpenSSL,
+so we moved forward with the implementation of libffpy.
+
 
 Usage
 =====
