@@ -1,6 +1,6 @@
 import unittest
 
-from libffpy import LibffPy, BigNum
+from libffpy.libffpy import LibffPy, BigNum
 from utils import make_tables, encrypt, decrypt
 
 class UtilsTest(unittest.TestCase):
