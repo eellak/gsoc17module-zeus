@@ -73,6 +73,24 @@ cp -R third_party /usr/local/include/
   `inhibit_profiling_info` and `inhibit_profiling_counters` to `true` on
   `src/common/profiling.cpp` before compiling the library.
 
+Installing libffpy
+==================
+
+Inside the libffpy folder run:
+
+```
+python setup.py install
+```
+
+Installing Package
+==================
+
+On the root directory run:
+
+```
+python setup.py install
+```
+
 Usage
 =====
 
