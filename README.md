@@ -1,20 +1,27 @@
 Implementation of a Re-Encryption Mix-Net
 ======================================================
 
-This module implements the re-encryption mix-net proposed by
-Fauzi et al. The relevant paper can be found
-[here](https://eprint.iacr.org/2016/866.pdf).
+This module implements the re-encryption mix-net
+presented by Fauzi et al. in their paper:
+["An Efficient Pairing-Based Shuffle Argument"](http://kodu.ut.ee/~lipmaa/papers/flsz17/).
 
-The purpose of this implementation is to replace the mix-net
-used by [Zeus](https://github.com/grnet/zeus) in favor of a faster one,
-however it can be used by anyone that needs a mix-net implementation.
+The motivation behind this implementation is
+to replace the mix-net used by
+the e-voting application, [Zeus](https://github.com/grnet/zeus)
+in favor of a faster one.
+However it can be used by anyone that needs a
+mix-net implementation.
 
-Apart from e-voting, the mix-net can be used for other tasks such as surveys
-and collection of data from various IoT devices.
+Apart from e-voting,
+the mix-net can be used for other tasks such as surveys
+and the collection of data from various IoT
+(Internet of Things) devices.
 
-This mix-net implementation is based on the existing
+The implementation was based on an existing
 [prototype](https://github.com/grnet/ac16)
-of a re-encryption mix-net proposed by Fauzi et al.
+of another re-encryption mix-net also proposed by Fauzi et al
+in their work:
+["A Shuffle Argument Secure in the Generic Model"](https://eprint.iacr.org/2016/866.pdf).
 
 
 Installing Dependencies
