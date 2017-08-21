@@ -61,7 +61,7 @@ after compiling it.
 - After installing libff, inside the cloned repo copy
 the third party libraries to the local includes.
 ```
-cp -R third_party /usr/local/include/
+cp -R depends /usr/local/include/
 ```
 
 - Add to the libff library (before compiling it) the `-fPIC`
@@ -71,7 +71,7 @@ cp -R third_party /usr/local/include/
 
 - In order to avoid libff outputting profiling info change the variables
   `inhibit_profiling_info` and `inhibit_profiling_counters` to `true` on
-  `src/common/profiling.cpp` before compiling the library.
+  `libff/common/profiling.cpp` before compiling the library.
 
 Installing libffpy
 ==================
