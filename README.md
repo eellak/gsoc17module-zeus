@@ -135,6 +135,8 @@ TODOs
 there needs to be a mechanism to create the Common Reference String
 anonymously.
 
+- **Integration with Zeus**
+
 Usage
 =====
 
