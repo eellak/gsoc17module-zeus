@@ -115,19 +115,26 @@ installation of libffpy.
 Challenges
 ==========
 
-- The real bottleneck of the prototype is its performance. The prototype's
+- **Elliptic Curve Multiplications**: The real bottleneck of the prototype
+is its performance. The prototype's
 performance was much slower than other implementations in C++. After some
 specific metrics we identified that the issue was that the multiplications
 on the elliptic curve elements were slow. The library implementing those
 multiplications was [bplib](https://github.com/gdanezis/bplib/).
 
-- bplip vs libff: Since the bottleneck were the multiplications on the elliptic
+- **bplip vs libff**: Since the bottleneck were the multiplications on the elliptic
 curve, we looked at replacements for bplib. One such replacement is libff. bplib
 uses libraries provided by OpenSSL for its elliptic curve computations.
 We defined specific metrics and compared the underlying C code of bplib
 with libff. The results showed that libff was indeed faster than OpenSSL,
 so we moved forward with the implementation of libffpy.
 
+TODOs
+=====
+
+- **CRS**: In order for the mix-net to be truly decentralized and anonymous
+there needs to be a mechanism to create the Common Reference String
+anonymously.
 
 Usage
 =====
@@ -135,14 +142,6 @@ Usage
 There exists a
 [demo](https://github.com/eellak/gsoc17module-zeus/blob/master/src/demo.py)
 that shows the basic workflow of the mix-net module.
-
-CRS
----
-
-In order for the mix-net to be truly decentralized and anonymous
-there needs to be a mechanism to create the Common Reference String
-anonymously.
-
 
 Organization
 ============
