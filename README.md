@@ -153,8 +153,8 @@ Student: Vitalis Salis
 
 Mentors:
 
-- Dimitris Mitropoulos
+- [Dimitris Mitropoulos](http://dimitro.gr/)
 - Georgios Tsoukalas
-- Panos Louridas
+- [Panos Louridas](https://istlab.dmst.aueb.gr/content/members/m_louridas.html)
 
 Organization: [Open Technologies Alliance - GFOSS](https://gfoss.eu/)
