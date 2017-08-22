@@ -138,8 +138,7 @@ anonymously.
 Usage
 =====
 
-There exists a
-[demo](https://github.com/eellak/gsoc17module-zeus/blob/master/src/demo.py)
+There exists a demo in the file `demo.py` of the root directory
 that shows the basic workflow of the mix-net module.
 
 Organization
