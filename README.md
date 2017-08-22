@@ -3,7 +3,8 @@ Implementation of a Re-Encryption Mix-Net
 
 This module implements the re-encryption mix-net
 presented by Fauzi et al. in their paper:
-["An Efficient Pairing-Based Shuffle Argument"](http://kodu.ut.ee/~lipmaa/papers/flsz17/).
+["A Shuffle Argument Secure in the Generic
+Model"](https://eprint.iacr.org/2016/866.pdf).
 
 The motivation behind this implementation is
 to replace the mix-net used by
@@ -19,9 +20,7 @@ and the collection of data from various IoT
 
 The implementation was based on an existing
 [prototype](https://github.com/grnet/ac16)
-of another re-encryption mix-net also proposed by Fauzi et al
-in their work:
-["A Shuffle Argument Secure in the Generic Model"](https://eprint.iacr.org/2016/866.pdf).
+of the same re-encryption mix-net.
 
 
 Installing Dependencies

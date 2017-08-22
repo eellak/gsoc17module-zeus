@@ -14,7 +14,7 @@ def get_long_desc():
 
 def setup_package():
     setup(
-        name='mymixnet',
+        name='flz16',
         version='0.0.1',
         description='An implementation of a re-encryption mix-net',
         long_description=get_long_desc(),
