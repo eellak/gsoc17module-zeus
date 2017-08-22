@@ -12,8 +12,8 @@ the e-voting application, [Zeus](https://github.com/grnet/zeus)
 in favor of a faster one.
 However it can be used by anyone that needs a
 mix-net implementation.
-
-Apart from e-voting,
+That is,
+apart from e-voting,
 the mix-net can be used for other tasks such as surveys
 and the collection of data from various IoT
 (Internet of Things) devices.
@@ -92,7 +92,7 @@ libffpy
 
 The mix-net proposed by Fauzi et al requires elliptic curve computations.
 A suitable library that provides support for elliptic curve computations
-is libff [libff](https://github.com/scipr-lab/libff).
+is [libff](https://github.com/scipr-lab/libff).
 
 Since libff is implemented in C++ we used Cython to create a wrapper
 for some of the features of libff. The Cython wrapper can be found in
@@ -131,9 +131,8 @@ so we moved forward with the implementation of libffpy.
 TODOs
 =====
 
-- **CRS**: In order for the mix-net to be truly decentralized and anonymous
-there needs to be a mechanism to create the Common Reference String
-anonymously.
+- **CRS (Common Reference String)**: In order for the mix-net to be truly decentralized and anonymous
+there needs to be a mechanism to create the CRS anonymously.
 
 - **Integration with Zeus**
 
