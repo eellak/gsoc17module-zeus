@@ -1,9 +1,9 @@
 import datetime, sys
 
-from crs import CRS
-from prover import Prover
-from verifier import Verifier
-from utils import make_s_randoms, random_permutation,\
+from flz16.crs import CRS
+from flz16.prover import Prover
+from flz16.verifier import Verifier
+from flz16.utils import make_s_randoms, random_permutation,\
         encrypt_messages, make_tables, decrypt_messages
 
 n = int(sys.argv[1])

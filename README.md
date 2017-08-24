@@ -1,34 +1,33 @@
 Implementation of a Re-Encryption Mix-Net
 ======================================================
 
-This module implements the re-encryption mix-net proposed by
-Fauzi et al. The relevant paper can be found
-[here](https://eprint.iacr.org/2016/866.pdf)
+This module implements the re-encryption mix-net
+presented by Fauzi et al. in their paper:
+["A Shuffle Argument Secure in the Generic
+Model"](https://eprint.iacr.org/2016/866.pdf).
 
-The purpose of this implementation is to replace the mix-net implementation
-used by [Zeus](https://github.com/grnet/zeus) in favor of a faster one,
-however it can be used by anyone that needs a mix-net implementation.
+The motivation behind this implementation is
+to replace the mix-net used by
+the e-voting application, [Zeus](https://github.com/grnet/zeus)
+in favor of a faster one.
+However it can be used by anyone that needs a
+mix-net implementation.
+That is,
+apart from e-voting,
+the mix-net can be used for other tasks such as surveys
+and the collection of data from various IoT
+(Internet of Things) devices.
 
-Apart from e-voting, the mix-net can be used for other tasks such as surveys
-and collection of data from various IoT devices.
-
-This mix-net implementation is based on the existing
+The implementation was based on an existing
 [prototype](https://github.com/grnet/ac16)
-of a re-encryption mix-net proposed by Fauzi et al.
+of the same re-encryption mix-net.
 
 
-Implementation
-==============
+Python
+======
 
-The mix-net is implemented using Python.
+The module requires **Python 2.7**.
 
-Since the mix-net is based on elliptic curves, we used
-[libff](https://github.com/scipr-lab/libff) for our
-elliptic curve computations. But, libff is implemented in C++
-so in order for it to be used by our module, we've created a
-Cython wrapper for it. While not a complete wrapper, it can be
-used independently by anyone that needs to use the features provided
-by libff.
 
 Installing Dependencies
 =======================
@@ -91,20 +90,63 @@ On the root directory run:
 python setup.py install
 ```
 
+Implementation
+==============
+
+libffpy
+-------
+
+The mix-net proposed by Fauzi et al requires elliptic curve computations.
+A suitable library that provides support for elliptic curve computations
+is [libff](https://github.com/scipr-lab/libff).
+
+Since libff is implemented in C++ we used Cython to create a wrapper
+for some of the features of libff. The Cython wrapper can be found in
+the folder `libffpy`. While not a complete wrapper, it can be
+used independently by anyone that needs the features provided by
+libff.
+
+The curve we used is bn128 and libff implements
+the [ate pairing](https://github.com/herumi/ate-pairing)
+for its bilinear pairing computations.
+
+Mix-Net Module
+--------------
+
+The mix-net is implemented using Python. It requires a working
+installation of libffpy.
+
+
+Challenges
+==========
+
+- **Elliptic Curve Multiplications**: The real bottleneck of the prototype
+is its performance. The prototype's
+performance was much slower than other implementations in C++. After some
+specific metrics we identified that the issue was that the multiplications
+on the elliptic curve elements were slow. The library implementing those
+multiplications was [bplib](https://github.com/gdanezis/bplib/).
+
+- **bplip vs libff**: Since the bottleneck were the multiplications on the elliptic
+curve, we looked at replacements for bplib. One such replacement is libff. bplib
+uses libraries provided by OpenSSL for its elliptic curve computations.
+We defined specific metrics and compared the underlying C code of bplib
+with libff. The results showed that libff was indeed faster than OpenSSL,
+so we moved forward with the implementation of libffpy.
+
+TODOs
+=====
+
+- **CRS (Common Reference String)**: In order for the mix-net to be truly decentralized and anonymous
+there needs to be a mechanism to create the CRS anonymously.
+
+- **Integration with Zeus**
+
 Usage
 =====
 
-There exists a
-[demo](https://github.com/eellak/gsoc17module-zeus/blob/master/src/demo.py)
+There exists a demo in the file `demo.py` of the root directory
 that shows the basic workflow of the mix-net module.
-
-CRS
----
-
-In order for the mix-net to be truly decentralized and anonymous
-there needs to be a mechanism to create the Common Reference String
-anonymously.
-
 
 Organization
 ============
@@ -117,8 +159,8 @@ Student: Vitalis Salis
 
 Mentors:
 
-- Dimitris Mitropoulos
+- [Dimitris Mitropoulos](http://dimitro.gr/)
 - Georgios Tsoukalas
-- Panos Louridas
+- [Panos Louridas](https://istlab.dmst.aueb.gr/content/members/m_louridas.html)
 
 Organization: [Open Technologies Alliance - GFOSS](https://gfoss.eu/)
