@@ -23,6 +23,12 @@ The implementation was based on an existing
 of the same re-encryption mix-net.
 
 
+Python
+======
+
+The module requires **Python 2.7**.
+
+
 Installing Dependencies
 =======================
 
